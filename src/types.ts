@@ -39,6 +39,6 @@ export type ClienteValue = string | string[] | undefined;
 export interface Cliente {
   id: string;
   createdAt: string;
-  estado: "nuevo" | "en_seguimiento" | "archivado";
+  estado: "activo" | "baja";
   values: Record<string, ClienteValue>;
 }

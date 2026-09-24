@@ -5,7 +5,7 @@
 create table if not exists public.clientes (
   id uuid primary key default gen_random_uuid(),
   created_at timestamptz not null default now(),
-  estado text not null default 'nuevo' check (estado in ('nuevo', 'en_seguimiento', 'archivado')),
+  estado text not null default 'activo' check (estado in ('activo', 'baja')),
   values jsonb not null
 );
 
@@ -18,7 +18,15 @@ create policy "anon puede insertar clientes"
   to anon
   with check (true);
 
--- Solo un usuario autenticado (admin logueado) puede leer, editar o borrar.
+-- La app ya no tiene login: /clientes es de acceso directo, así que el
+-- rol anon también necesita poder leer (además de authenticated, por si
+-- en el futuro se reintroduce un login de administrador).
+create policy "anon puede leer clientes"
+  on public.clientes
+  for select
+  to anon
+  using (true);
+
 create policy "autenticados pueden leer clientes"
   on public.clientes
   for select
@@ -50,7 +58,14 @@ create policy "anon puede subir fotos"
   to anon
   with check (bucket_id = 'fotos-clientes');
 
--- Solo el admin autenticado puede ver/leer las fotos (via URL firmada).
+-- Como /clientes ya no requiere login, anon también necesita poder leer
+-- las fotos (via URL firmada) para poder mostrarlas en la ficha del cliente.
+create policy "anon puede leer fotos"
+  on storage.objects
+  for select
+  to anon
+  using (bucket_id = 'fotos-clientes');
+
 create policy "autenticados pueden leer fotos"
   on storage.objects
   for select

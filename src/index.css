@@ -53,6 +53,10 @@ button {
   padding: 0 20px 60px;
 }
 
+.container.container-wide {
+  max-width: 1400px;
+}
+
 .header {
   display: flex;
   align-items: center;
@@ -60,6 +64,10 @@ button {
   padding: 28px 20px 20px;
   max-width: 880px;
   margin: 0 auto;
+}
+
+.header.header-wide {
+  max-width: 1400px;
 }
 
 .header img {
@@ -277,6 +285,38 @@ button {
   background: var(--color-error);
 }
 
+.contact-actions {
+  display: flex;
+  gap: 8px;
+  margin: 8px 0 0;
+  flex-wrap: wrap;
+}
+
+.contact-btn {
+  padding: 6px 14px;
+  font-size: 0.82rem;
+}
+
+.contact-btn.whatsapp {
+  background: #25d366;
+}
+
+.contact-btn.whatsapp:hover {
+  background: #1ebe57;
+}
+
+.contact-btn.call {
+  background: var(--color-verde);
+}
+
+.contact-btn.mail {
+  background: #4a6fa5;
+}
+
+.contact-btn.mail:hover {
+  background: #3c5c8a;
+}
+
 .policy-top-actions {
   justify-content: flex-start;
   margin-top: 0;
@@ -447,7 +487,49 @@ tbody td {
 
 tbody tr:hover {
   background: rgba(56, 71, 48, 0.05);
+}
+
+.row-clickable {
   cursor: pointer;
+}
+
+.row-actions {
+  display: flex;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.btn-sm {
+  padding: 6px 12px;
+  font-size: 0.78rem;
+}
+
+.btn-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border: 1px solid var(--color-verde, #33502f);
+  border-radius: 50%;
+  background: #fff;
+  color: var(--color-verde, #33502f);
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.btn-icon:hover {
+  background: rgba(56, 71, 48, 0.08);
+}
+
+.btn-icon.danger {
+  border-color: #a33;
+  color: #a33;
+}
+
+.btn-icon.danger:hover {
+  background: rgba(170, 51, 51, 0.08);
 }
 
 .badge {
@@ -460,19 +542,46 @@ tbody tr:hover {
   letter-spacing: 0.03em;
 }
 
-.badge.nuevo {
+.badge.activo {
   background: #e3ecdf;
   color: var(--color-verde);
 }
 
-.badge.en_seguimiento {
-  background: #fbe8c6;
-  color: #8a5a00;
-}
-
-.badge.archivado {
+.badge.baja {
   background: #e6e2da;
   color: #666;
+}
+
+.cell-nombre {
+  display: inline-flex;
+  align-items: center;
+}
+
+.avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 8px;
+  flex-shrink: 0;
+}
+
+.avatar-placeholder {
+  background: var(--color-crema, #e6e2da);
+}
+
+.sexo-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  margin-right: 6px;
+  border-radius: 50%;
+  background: var(--color-verde, #33502f);
+  color: #fff;
+  font-size: 0.72rem;
+  line-height: 1;
 }
 
 .empty-state {
@@ -496,7 +605,7 @@ tbody tr:hover {
 .modal {
   background: var(--color-blanco);
   border-radius: var(--radius);
-  max-width: 700px;
+  max-width: 1100px;
   width: 100%;
   padding: 28px;
   position: relative;
@@ -513,19 +622,82 @@ tbody tr:hover {
   color: var(--color-verde);
 }
 
-.detail-row {
+.profile-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.profile-photo {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.profile-photo-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-crema, #f2ede3);
+  color: var(--color-verde);
+  font-size: 0.75rem;
+  text-align: center;
+}
+
+.profile-header h2 {
+  margin: 0;
+}
+
+.profile-header .help {
+  margin: 4px 0 0;
+}
+
+.detail-section {
+  margin-top: 22px;
+}
+
+.detail-section-title {
+  color: var(--color-verde);
+  font-size: 1.05rem;
+  margin: 0 0 6px;
+  padding-bottom: 6px;
+  border-bottom: 2px solid var(--color-verde);
+}
+
+.detail-grid {
+  display: flex;
+  flex-direction: column;
+}
+
+.detail-row-line {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 24px;
   padding: 10px 0;
   border-bottom: 1px solid var(--color-crema);
 }
 
-.detail-row .k {
+.detail-field.full {
+  grid-column: 1 / -1;
+}
+
+@media (max-width: 640px) {
+  .detail-row-line {
+    grid-template-columns: 1fr;
+  }
+}
+
+.detail-field .k {
   font-weight: 600;
   color: var(--color-verde);
   font-size: 0.82rem;
   margin-bottom: 3px;
 }
 
-.detail-row .v {
+.detail-field .v {
   font-size: 0.92rem;
   white-space: pre-wrap;
 }

@@ -59,7 +59,24 @@ export const clientesApi = {
     const finalValues = await uploadFotoIfNeeded(values);
     const { error } = await supabase
       .from("clientes")
-      .insert({ estado: "nuevo", values: finalValues });
+      .insert({ estado: "activo", values: finalValues });
+    if (error) throw error;
+  },
+
+  async create(values: Record<string, ClienteValue>): Promise<void> {
+    const finalValues = await uploadFotoIfNeeded(values);
+    const { error } = await supabase
+      .from("clientes")
+      .insert({ estado: "activo", values: finalValues });
+    if (error) throw error;
+  },
+
+  async update(id: string, values: Record<string, ClienteValue>): Promise<void> {
+    const finalValues = await uploadFotoIfNeeded(values);
+    const { error } = await supabase
+      .from("clientes")
+      .update({ values: finalValues })
+      .eq("id", id);
     if (error) throw error;
   },
 

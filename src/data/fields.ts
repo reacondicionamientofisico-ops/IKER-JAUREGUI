@@ -14,6 +14,16 @@ export const SECTIONS: SectionDef[] = [
         type: "text",
       },
       {
+        key: "telefono",
+        label: "Teléfono de contacto (con prefijo)",
+        type: "tel",
+      },
+      {
+        key: "email",
+        label: "Email de contacto",
+        type: "email",
+      },
+      {
         key: "foto",
         label: "Foto",
         type: "file",
@@ -124,22 +134,40 @@ export const SECTIONS: SectionDef[] = [
         help: "Preguntamos esto porque es importante a nivel de salud.",
       },
       {
+        key: "ejercicioConcreto",
+        label:
+          "¿Quieres hacer algún ejercicio en algún día de la semana en concreto? ¿Y grupo muscular?",
+        type: "textarea",
+      },
+      {
+        key: "grupoMuscularPrioridad",
+        label: "¿A qué grupo muscular quieres darle prioridad?",
+        type: "text",
+      },
+      {
+        key: "horaLevantarAcostar",
+        label: "Hora en la que te levantas y te acuestas",
+        type: "text",
+        placeholder: "Ej: 07:00 - 23:30",
+      },
+      {
+        key: "horaEntrenar",
+        label: "Hora en la que sueles entrenar",
+        type: "time",
+      },
+    ],
+  },
+  {
+    key: "intenciones",
+    title: "Intenciones",
+    fields: [
+      {
         key: "circuloSocial",
         label:
           "¿Consideras que tienes un círculo social (amistades/pareja/familia) que te enriquece como persona y te hace sentir completo/a?",
         type: "select",
         options: opts(["Muy bueno", "Bueno", "Normal", "Flojo", "Muy flojo"]),
         help: "Preguntamos esto porque es importante a nivel de salud.",
-      },
-      {
-        key: "telefono",
-        label: "Teléfono de contacto (con prefijo)",
-        type: "tel",
-      },
-      {
-        key: "email",
-        label: "Email de contacto",
-        type: "email",
       },
       {
         key: "experienciaPrevia",
@@ -187,28 +215,6 @@ export const SECTIONS: SectionDef[] = [
         label:
           "Explica detalladamente qué rutina has venido utilizando en los últimos meses (días de descanso incluidos) y qué ejercicios te gustaría mantener o en cuáles te gustaría progresar más",
         type: "textarea",
-      },
-      {
-        key: "ejercicioConcreto",
-        label:
-          "¿Quieres hacer algún ejercicio en algún día de la semana en concreto? ¿Y grupo muscular?",
-        type: "textarea",
-      },
-      {
-        key: "grupoMuscularPrioridad",
-        label: "¿A qué grupo muscular quieres darle prioridad?",
-        type: "text",
-      },
-      {
-        key: "horaLevantarAcostar",
-        label: "Hora en la que te levantas y te acuestas",
-        type: "text",
-        placeholder: "Ej: 07:00 - 23:30",
-      },
-      {
-        key: "horaEntrenar",
-        label: "Hora en la que sueles entrenar",
-        type: "time",
       },
     ],
   },

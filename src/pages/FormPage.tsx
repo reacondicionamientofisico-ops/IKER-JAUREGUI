@@ -109,6 +109,9 @@ export default function FormPage() {
             <Link className="btn secondary" to="/formulario/politica-proteccion-datos">
               Política de protección de datos
             </Link>
+            <Link className="btn secondary" to="/clientes">
+              Volver al inicio
+            </Link>
           </div>
         </div>
       </div>

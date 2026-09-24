@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { clientesApi } from "../data/clientesApi";
-import { downloadCsv } from "../data/csv";
 import ClienteDetail from "./ClienteDetail";
+import ClienteFormModal from "./ClienteFormModal";
 import type { Cliente } from "../types";
 
 function val(c: Cliente, key: string): string {
@@ -10,11 +10,31 @@ function val(c: Cliente, key: string): string {
   return Array.isArray(v) ? v.join(", ") : String(v);
 }
 
+function sexoIcon(sexo: string): string | null {
+  if (sexo === "Varón") return "♂";
+  if (sexo === "Mujer") return "♀";
+  return null;
+}
+
+function Avatar({ fotoPath }: { fotoPath: string }) {
+  const [url, setUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    setUrl(null);
+    clientesApi.fotoUrl(fotoPath).then(setUrl);
+  }, [fotoPath]);
+
+  if (!url) return <span className="avatar avatar-placeholder" />;
+  return <img className="avatar" src={url} alt="" />;
+}
+
 export default function TablePage() {
   const [clientes, setClientes] = useState<Cliente[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [viewId, setViewId] = useState<string | null>(null);
+  const [editId, setEditId] = useState<string | null>(null);
+  const [adding, setAdding] = useState(false);
 
   const refresh = () => {
     setLoading(true);
@@ -34,18 +54,24 @@ export default function TablePage() {
     refresh();
   };
 
+  const handleDeleteFromRow = async (id: string, nombre: string) => {
+    if (!confirm(`¿Seguro que quieres eliminar a ${nombre || "este usuario"}?`)) return;
+    await handleDelete(id);
+  };
+
   const handleEstadoChange = async (id: string, estado: Cliente["estado"]) => {
     await clientesApi.updateEstado(id, estado);
     refresh();
   };
 
-  const selected = clientes.find((c) => c.id === selectedId) ?? null;
+  const viewing = clientes.find((c) => c.id === viewId) ?? null;
+  const editing = clientes.find((c) => c.id === editId) ?? null;
 
   return (
-    <div className="container">
+    <div className="container container-wide">
       <div className="toolbar">
-        <button className="btn secondary" onClick={() => downloadCsv(filtered)}>
-          Exportar CSV
+        <button className="btn" onClick={() => setAdding(true)}>
+          Añadir
         </button>
       </div>
 
@@ -66,10 +92,10 @@ export default function TablePage() {
             <table>
               <thead>
                 <tr>
+                  <th>Acciones</th>
                   <th>Fecha</th>
                   <th>Nombre y apellidos</th>
                   <th>Edad</th>
-                  <th>Sexo</th>
                   <th>Localidad</th>
                   <th>Teléfono / Email</th>
                   <th>Objetivo</th>
@@ -78,11 +104,53 @@ export default function TablePage() {
               </thead>
               <tbody>
                 {filtered.map((c) => (
-                  <tr key={c.id} onClick={() => setSelectedId(c.id)}>
+                  <tr
+                    key={c.id}
+                    className="row-clickable"
+                    onClick={() => setViewId(c.id)}
+                  >
+                    <td className="row-actions" onClick={(e) => e.stopPropagation()}>
+                      <button
+                        type="button"
+                        className="btn-icon"
+                        title="Ver"
+                        aria-label="Ver"
+                        onClick={() => setViewId(c.id)}
+                      >
+                        👁
+                      </button>
+                      <button
+                        type="button"
+                        className="btn-icon"
+                        title="Editar"
+                        aria-label="Editar"
+                        onClick={() => setEditId(c.id)}
+                      >
+                        ✎
+                      </button>
+                      <button
+                        type="button"
+                        className="btn-icon danger"
+                        title="Borrar"
+                        aria-label="Borrar"
+                        onClick={() => handleDeleteFromRow(c.id, val(c, "nombre"))}
+                      >
+                        🗑
+                      </button>
+                    </td>
                     <td>{new Date(c.createdAt).toLocaleDateString("es-ES")}</td>
-                    <td>{val(c, "nombre") || "—"}</td>
+                    <td>
+                      <span className="cell-nombre">
+                        {val(c, "foto") && <Avatar fotoPath={val(c, "foto")} />}
+                        {sexoIcon(val(c, "sexo")) && (
+                          <span className="sexo-icon" title={val(c, "sexo")}>
+                            {sexoIcon(val(c, "sexo"))}
+                          </span>
+                        )}
+                        {val(c, "nombre") || "—"}
+                      </span>
+                    </td>
                     <td>{val(c, "edad") || "—"}</td>
-                    <td>{val(c, "sexo") || "—"}</td>
                     <td>{val(c, "localidad") || "—"}</td>
                     <td>
                       {val(c, "telefono") || "—"}
@@ -91,11 +159,7 @@ export default function TablePage() {
                     <td>{val(c, "objetivosEspecificos") || "—"}</td>
                     <td>
                       <span className={`badge ${c.estado}`}>
-                        {c.estado === "nuevo"
-                          ? "Nuevo"
-                          : c.estado === "en_seguimiento"
-                          ? "En seguimiento"
-                          : "Archivado"}
+                        {c.estado === "activo" ? "Activo" : "Baja"}
                       </span>
                     </td>
                   </tr>
@@ -111,12 +175,28 @@ export default function TablePage() {
         total.
       </p>
 
-      {selected && (
+      {viewing && (
         <ClienteDetail
-          cliente={selected}
-          onClose={() => setSelectedId(null)}
+          cliente={viewing}
+          onClose={() => setViewId(null)}
           onDelete={handleDelete}
           onEstadoChange={handleEstadoChange}
+        />
+      )}
+
+      {editing && (
+        <ClienteFormModal
+          cliente={editing}
+          onClose={() => setEditId(null)}
+          onSaved={refresh}
+        />
+      )}
+
+      {adding && (
+        <ClienteFormModal
+          cliente={null}
+          onClose={() => setAdding(false)}
+          onSaved={refresh}
         />
       )}
     </div>

@@ -91,6 +91,7 @@ export default function FormField({
       }
       case "file": {
         const dataUrl = (value as string) ?? "";
+        const isPreviewable = dataUrl.startsWith("data:");
         const handleFile = (file: File | undefined) => {
           if (!file) return;
           const reader = new FileReader();
@@ -99,12 +100,15 @@ export default function FormField({
         };
         return (
           <div className="file-field">
-            {dataUrl && (
+            {isPreviewable && (
               <img
                 src={dataUrl}
                 alt="Vista previa"
                 style={{ maxWidth: 160, maxHeight: 160, display: "block", marginBottom: 8, borderRadius: 8 }}
               />
+            )}
+            {dataUrl && !isPreviewable && (
+              <p className="help">Ya hay una foto guardada. Sube otra para reemplazarla.</p>
             )}
             <input
               id={id}
