@@ -3,6 +3,9 @@ import type { SectionDef } from "../types";
 const opts = (values: string[]): { value: string; label: string }[] =>
   values.map((v) => ({ value: v, label: v }));
 
+const range = (min: number, max: number): number[] =>
+  Array.from({ length: max - min + 1 }, (_, i) => min + i);
+
 export const SECTIONS: SectionDef[] = [
   {
     key: "ficha",
@@ -10,24 +13,35 @@ export const SECTIONS: SectionDef[] = [
     fields: [
       {
         key: "nombre",
-        label: "Nombre y apellidos",
+        label: "Nombre",
         type: "text",
+      },
+      {
+        key: "primerApellido",
+        label: "Primer apellido",
+        type: "text",
+      },
+      {
+        key: "segundoApellido",
+        label: "Segundo apellido",
+        type: "text",
+      },
+      {
+        key: "foto",
+        label: "Foto (opcional)",
+        type: "file",
+        help: "Sube una foto tuya desde tu ordenador (opcional).",
       },
       {
         key: "telefono",
         label: "Teléfono de contacto (con prefijo)",
         type: "tel",
+        groupStart: "Contacto",
       },
       {
         key: "email",
         label: "Email de contacto",
         type: "email",
-      },
-      {
-        key: "foto",
-        label: "Foto",
-        type: "file",
-        help: "Sube una foto tuya desde tu ordenador (opcional).",
       },
       {
         key: "sexo",
@@ -36,11 +50,16 @@ export const SECTIONS: SectionDef[] = [
         options: opts(["Varón", "Mujer"]),
       },
       {
+        key: "fechaNacimiento",
+        label: "Fecha de nacimiento",
+        type: "date",
+      },
+      {
         key: "edad",
         label: "Edad",
         type: "number",
-        min: 10,
-        max: 100,
+        computed: true,
+        help: "Se calcula automáticamente a partir de la fecha de nacimiento.",
       },
       {
         key: "localidad",
@@ -49,28 +68,57 @@ export const SECTIONS: SectionDef[] = [
       },
       {
         key: "dni",
-        label: "DNI o Pasaporte",
+        label: "DNI o Pasaporte (número completo CON letra)",
         type: "text",
       },
       {
         key: "altura",
         label: "Altura (cm)",
-        type: "number",
-        min: 150,
-        max: 210,
+        type: "select",
+        options: opts(range(150, 210).map(String)),
+        groupStart: "Situación actual",
       },
       {
         key: "peso",
         label: "Peso (kg)",
-        type: "number",
-        min: 50,
-        max: 120,
+        type: "select",
+        options: opts(range(50, 120).map(String)),
       },
       {
         key: "deportePrincipal",
         label: "Deporte principal",
         type: "text",
         placeholder: "Ej: Fútbol, Baloncesto, Béisbol...",
+      },
+      {
+        key: "diasDeportePrincipal",
+        label: "¿Cuántos días a la semana empleas en tu deporte principal?",
+        type: "select",
+        options: opts(range(1, 7).map(String)),
+      },
+      {
+        key: "diasGimnasio",
+        label: "¿Cuántos días a la semana dedicas al gimnasio?",
+        type: "select",
+        options: opts(range(1, 7).map(String)),
+      },
+      {
+        key: "material",
+        label:
+          "Gimnasio donde entrenas o máquinas/material de entrenamiento del que dispones (texto aquí o envíanos fotos/vídeo por Telegram)",
+        type: "textarea",
+      },
+      {
+        key: "accesorios",
+        label:
+          "¿Tienes accesorios de entrenamiento? (ej: straps o agarraderas, cinturón...)",
+        type: "textarea",
+      },
+      {
+        key: "rutinaActual",
+        label:
+          "Explica detalladamente qué rutina has venido utilizando en los últimos meses (días de descanso incluidos) y qué ejercicios te gustaría mantener o en cuáles te gustaría progresar más",
+        type: "textarea",
       },
       {
         key: "profesion",
@@ -91,25 +139,6 @@ export const SECTIONS: SectionDef[] = [
         type: "select",
         options: opts(["2","3","4","5","6","7","8","9","10","11","12"]),
         allowOther: true,
-      },
-      {
-        key: "objetivos",
-        label: "Explica detalladamente tus objetivos a corto, medio y largo plazo",
-        type: "textarea",
-      },
-      {
-        key: "objetivosEspecificos",
-        label: "Objetivos específicos",
-        type: "multiselect",
-        options: opts([
-          "Perder peso",
-          "Ganar fuerza",
-          "Mejorar condición física",
-          "Ganar masa muscular",
-          "Tonificar",
-          "Mejorar salud general",
-          "Rendimiento deportivo",
-        ]),
       },
       {
         key: "historialSalud",
@@ -134,33 +163,15 @@ export const SECTIONS: SectionDef[] = [
         help: "Preguntamos esto porque es importante a nivel de salud.",
       },
       {
-        key: "ejercicioConcreto",
-        label:
-          "¿Quieres hacer algún ejercicio en algún día de la semana en concreto? ¿Y grupo muscular?",
-        type: "textarea",
-      },
-      {
-        key: "grupoMuscularPrioridad",
-        label: "¿A qué grupo muscular quieres darle prioridad?",
-        type: "text",
-      },
-      {
-        key: "horaLevantarAcostar",
-        label: "Hora en la que te levantas y te acuestas",
-        type: "text",
-        placeholder: "Ej: 07:00 - 23:30",
-      },
-      {
-        key: "horaEntrenar",
-        label: "Hora en la que sueles entrenar",
+        key: "horaLevantarse",
+        label: "Hora en la que te levantas",
         type: "time",
       },
-    ],
-  },
-  {
-    key: "intenciones",
-    title: "Intenciones",
-    fields: [
+      {
+        key: "horaAcostarse",
+        label: "Hora en la que te acuestas",
+        type: "time",
+      },
       {
         key: "circuloSocial",
         label:
@@ -176,10 +187,59 @@ export const SECTIONS: SectionDef[] = [
         type: "textarea",
       },
       {
-        key: "diasDisponibles",
-        label:
-          "¿Cuántos días a la semana tienes disponibles para entrenar y qué días de la semana?",
+        key: "horaEntrenar",
+        label: "Hora en la que sueles entrenar",
+        type: "time",
+      },
+    ],
+  },
+  {
+    key: "intenciones",
+    title: "Intenciones",
+    fields: [
+      {
+        key: "tipoActividadFisica",
+        label: "¿Qué tipo de actividad física te gusta realizar?",
         type: "textarea",
+      },
+      {
+        key: "objetivos",
+        label: "Explica detalladamente tus objetivos a corto, medio y largo plazo",
+        type: "textarea",
+      },
+      {
+        key: "objetivosEspecificos",
+        label: "Objetivos específicos",
+        type: "multiselect",
+        options: opts([
+          "Perder peso",
+          "Ganar fuerza",
+          "Mejorar condición física",
+          "Ganar masa muscular",
+          "Tonificar",
+          "Mejorar salud general",
+          "Rendimiento deportivo",
+        ]),
+      },
+      {
+        key: "diasDisponiblesCantidad",
+        label: "¿Cuántos días a la semana tienes disponibles para entrenar?",
+        type: "select",
+        options: opts(range(1, 7).map(String)),
+      },
+      {
+        key: "diasDisponiblesSemana",
+        label: "¿Qué días de la semana?",
+        type: "multiselect",
+        options: opts([
+          "Lunes",
+          "Martes",
+          "Miércoles",
+          "Jueves",
+          "Viernes",
+          "Sábado",
+          "Domingo",
+        ]),
       },
       {
         key: "diasDeseados",
@@ -188,33 +248,15 @@ export const SECTIONS: SectionDef[] = [
         type: "textarea",
       },
       {
-        key: "diasDeportePrincipal",
+        key: "ejercicioConcreto",
         label:
-          "¿Cuántos días a la semana empleas en tu deporte principal? (especifica si es en el gimnasio)",
+          "¿Quieres hacer algún ejercicio en algún día de la semana en concreto? ¿Y grupo muscular?",
         type: "textarea",
       },
       {
-        key: "tipoActividadFisica",
-        label: "¿Qué tipo de actividad física te gusta realizar?",
-        type: "textarea",
-      },
-      {
-        key: "material",
-        label:
-          "Gimnasio donde entrenas o máquinas/material de entrenamiento del que dispones (texto aquí o envíanos fotos/vídeo por Telegram)",
-        type: "textarea",
-      },
-      {
-        key: "accesorios",
-        label:
-          "¿Tienes accesorios de entrenamiento? (ej: straps o agarraderas, cinturón...)",
-        type: "textarea",
-      },
-      {
-        key: "rutinaActual",
-        label:
-          "Explica detalladamente qué rutina has venido utilizando en los últimos meses (días de descanso incluidos) y qué ejercicios te gustaría mantener o en cuáles te gustaría progresar más",
-        type: "textarea",
+        key: "grupoMuscularPrioridad",
+        label: "¿A qué grupo muscular quieres darle prioridad?",
+        type: "text",
       },
     ],
   },
@@ -298,6 +340,17 @@ export const SECTIONS: SectionDef[] = [
       {
         key: "alergiasAlimentarias",
         label: "¿Tienes alergia a algún alimento o bebida? ¿Cuál y con qué condiciones?",
+        type: "textarea",
+      },
+    ],
+  },
+  {
+    key: "cierre",
+    title: "Cierre",
+    fields: [
+      {
+        key: "observaciones",
+        label: "Observaciones",
         type: "textarea",
       },
     ],

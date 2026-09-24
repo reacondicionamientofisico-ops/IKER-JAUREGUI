@@ -1,4 +1,5 @@
 import type { FieldDef, ClienteValue } from "../types";
+import { DEFAULT_PHONE_PREFIX, PHONE_PREFIXES } from "../data/phonePrefixes";
 
 const OTHER_VALUE = "__otro__";
 
@@ -138,12 +139,41 @@ export default function FormField({
             max={field.max}
             value={(value as string) ?? ""}
             placeholder={field.placeholder}
+            readOnly={field.computed}
+            disabled={field.computed}
             onChange={(e) => onChange(e.target.value)}
           />
         );
+      case "tel": {
+        const raw = (value as string) ?? "";
+        const match = raw.match(/^(\+\d+)\s*(.*)$/);
+        const prefix = match ? match[1] : DEFAULT_PHONE_PREFIX;
+        const number = match ? match[2] : raw;
+        return (
+          <div className="tel-field">
+            <select
+              aria-label="Prefijo"
+              value={prefix}
+              onChange={(e) => onChange(`${e.target.value} ${number}`.trim())}
+            >
+              {PHONE_PREFIXES.map((p) => (
+                <option key={p.code} value={p.code}>
+                  {p.code} {p.country}
+                </option>
+              ))}
+            </select>
+            <input
+              id={id}
+              type="tel"
+              value={number}
+              placeholder={field.placeholder}
+              onChange={(e) => onChange(`${prefix} ${e.target.value}`.trim())}
+            />
+          </div>
+        );
+      }
       case "date":
       case "time":
-      case "tel":
       case "email":
         return (
           <input

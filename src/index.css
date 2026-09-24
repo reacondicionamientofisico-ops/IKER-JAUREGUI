@@ -8,6 +8,7 @@
   --color-texto: #2a2a2a;
   --color-borde: #d8d0c2;
   --color-error: #a13d3d;
+  --color-acento: #9c7a3c;
   --radius: 10px;
   --shadow: 0 2px 10px rgba(56, 71, 48, 0.08);
 }
@@ -156,18 +157,28 @@ button {
   margin-bottom: 24px;
 }
 
+.subsection-title {
+  color: var(--color-acento);
+  font-size: 1.5rem;
+  margin: 28px 0 16px;
+  padding-bottom: 6px;
+  border-bottom: 2px solid var(--color-verde-claro);
+}
+
 .field {
   margin-bottom: 18px;
 }
 
 .field label {
   display: block;
-  font-weight: 700;
-  font-size: 0.9rem;
-  letter-spacing: 0.03em;
+  font-weight: 800;
+  font-size: 1.1rem;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
-  margin-bottom: 8px;
-  color: var(--color-verde-claro);
+  margin-bottom: 10px;
+  padding-left: 10px;
+  border-left: 4px solid var(--color-acento);
+  color: var(--color-verde);
 }
 
 .field .help {
@@ -213,20 +224,39 @@ button {
   color: var(--color-error);
 }
 
+.tel-field {
+  display: flex;
+  gap: 8px;
+}
+
+.tel-field select {
+  flex: 0 0 auto;
+  width: auto;
+  max-width: 45%;
+}
+
+.tel-field input {
+  flex: 1 1 auto;
+}
+
 .checkbox-grid {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
 }
 
-.checkbox-pill {
+.field .checkbox-pill {
   display: flex;
   align-items: center;
   gap: 6px;
   border: 1px solid var(--color-borde);
   border-radius: 999px;
-  padding: 7px 14px;
-  font-size: 0.85rem;
+  padding: 5px 12px;
+  font-size: 0.78rem;
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: normal;
+  color: var(--color-texto);
   cursor: pointer;
   user-select: none;
 }
@@ -670,6 +700,12 @@ tbody tr:hover {
 .detail-grid {
   display: flex;
   flex-direction: column;
+}
+
+.detail-group-title {
+  color: var(--color-verde);
+  font-size: 0.95rem;
+  margin: 14px 0 4px;
 }
 
 .detail-row-line {

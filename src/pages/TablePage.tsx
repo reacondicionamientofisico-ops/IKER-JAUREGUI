@@ -10,6 +10,12 @@ function val(c: Cliente, key: string): string {
   return Array.isArray(v) ? v.join(", ") : String(v);
 }
 
+function fullName(c: Cliente): string {
+  return [val(c, "nombre"), val(c, "primerApellido"), val(c, "segundoApellido")]
+    .filter((s) => s.trim() !== "")
+    .join(" ");
+}
+
 function sexoIcon(sexo: string): string | null {
   if (sexo === "Varón") return "♂";
   if (sexo === "Mujer") return "♀";
@@ -93,7 +99,7 @@ export default function TablePage() {
               <thead>
                 <tr>
                   <th>Acciones</th>
-                  <th>Fecha</th>
+                  <th>Fecha alta</th>
                   <th>Nombre y apellidos</th>
                   <th>Edad</th>
                   <th>Localidad</th>
@@ -133,7 +139,7 @@ export default function TablePage() {
                         className="btn-icon danger"
                         title="Borrar"
                         aria-label="Borrar"
-                        onClick={() => handleDeleteFromRow(c.id, val(c, "nombre"))}
+                        onClick={() => handleDeleteFromRow(c.id, fullName(c))}
                       >
                         🗑
                       </button>
@@ -147,7 +153,7 @@ export default function TablePage() {
                             {sexoIcon(val(c, "sexo"))}
                           </span>
                         )}
-                        {val(c, "nombre") || "—"}
+                        {fullName(c) || "—"}
                       </span>
                     </td>
                     <td>{val(c, "edad") || "—"}</td>

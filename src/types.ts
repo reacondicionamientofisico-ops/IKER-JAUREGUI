@@ -26,6 +26,8 @@ export interface FieldDef {
   required?: boolean;
   allowOther?: boolean;
   placeholder?: string;
+  groupStart?: string;
+  computed?: boolean;
 }
 
 export interface SectionDef {

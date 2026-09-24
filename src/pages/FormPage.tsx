@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { SECTIONS } from "../data/fields";
 import { clientesApi } from "../data/clientesApi";
 import FormField, { OTHER_VALUE } from "../components/FormField";
 import type { ClienteValue } from "../types";
+import { calcularEdad } from "../lib/age";
 import logo from "../assets/logo.jpeg";
 
 export default function FormPage() {
@@ -24,6 +25,11 @@ export default function FormPage() {
   const setOther = (key: string, text: string) => {
     setOtherTexts((prev) => ({ ...prev, [key]: text }));
   };
+
+  useEffect(() => {
+    setValue("edad", calcularEdad(values.fechaNacimiento as string | undefined));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [values.fechaNacimiento]);
 
   const validate = (): boolean => {
     const newErrors: Record<string, string> = {};
@@ -138,43 +144,52 @@ export default function FormPage() {
           <div className="card" key={section.key}>
             <h2 className="section-title">{section.title}</h2>
             {section.fields.map((field) => (
-              <FormField
-                key={field.key}
-                field={field}
-                value={values[field.key]}
-                otherText={otherTexts[field.key]}
-                error={errors[field.key]}
-                onChange={(v) => setValue(field.key, v)}
-                onOtherTextChange={(t) => setOther(field.key, t)}
-              />
+              <div key={field.key}>
+                {field.groupStart && (
+                  <h3 className="subsection-title">{field.groupStart}</h3>
+                )}
+                <FormField
+                  field={field}
+                  value={values[field.key]}
+                  otherText={otherTexts[field.key]}
+                  error={errors[field.key]}
+                  onChange={(v) => setValue(field.key, v)}
+                  onOtherTextChange={(t) => setOther(field.key, t)}
+                />
+              </div>
             ))}
+            {section.key === "cierre" && (
+              <>
+                <label className="consent">
+                  <input
+                    type="checkbox"
+                    checked={consent}
+                    onChange={(e) => setConsent(e.target.checked)}
+                  />
+                  <span>
+                    Acepto que mis datos personales y de salud sean utilizados
+                    por Reacondicionamiento Físico y Salud IJ únicamente para
+                    diseñar y adaptar mi plan de entrenamiento y alimentación.
+                    Estos datos se almacenan de forma segura en una base de
+                    datos en la nube, con acceso restringido únicamente al
+                    personal autorizado de Reacondicionamiento Físico y Salud
+                    IJ. Más información en la{" "}
+                    <Link to="/formulario/politica-proteccion-datos">
+                      Política de protección de datos
+                    </Link>
+                    .
+                  </span>
+                </label>
+                {errors["__consent"] && (
+                  <p className="error-text" style={{ textAlign: "center" }}>
+                    {errors["__consent"]}
+                  </p>
+                )}
+              </>
+            )}
           </div>
         ))}
 
-        <label className="consent">
-          <input
-            type="checkbox"
-            checked={consent}
-            onChange={(e) => setConsent(e.target.checked)}
-          />
-          <span>
-            Acepto que mis datos personales y de salud sean utilizados por
-            Reacondicionamiento Físico y Salud IJ únicamente para diseñar y
-            adaptar mi plan de entrenamiento y alimentación. Estos datos se
-            almacenan de forma segura en una base de datos en la nube, con
-            acceso restringido únicamente al personal autorizado de
-            Reacondicionamiento Físico y Salud IJ. Más información en la{" "}
-            <Link to="/formulario/politica-proteccion-datos">
-              Política de protección de datos
-            </Link>
-            .
-          </span>
-        </label>
-        {errors["__consent"] && (
-          <p className="error-text" style={{ textAlign: "center" }}>
-            {errors["__consent"]}
-          </p>
-        )}
         {submitError && (
           <p className="error-text" style={{ textAlign: "center" }}>
             {submitError}

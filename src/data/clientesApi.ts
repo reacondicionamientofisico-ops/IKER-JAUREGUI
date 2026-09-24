@@ -63,19 +63,26 @@ export const clientesApi = {
     if (error) throw error;
   },
 
-  async create(values: Record<string, ClienteValue>): Promise<void> {
+  async create(
+    values: Record<string, ClienteValue>,
+    estado: Cliente["estado"] = "activo"
+  ): Promise<void> {
     const finalValues = await uploadFotoIfNeeded(values);
     const { error } = await supabase
       .from("clientes")
-      .insert({ estado: "activo", values: finalValues });
+      .insert({ estado, values: finalValues });
     if (error) throw error;
   },
 
-  async update(id: string, values: Record<string, ClienteValue>): Promise<void> {
+  async update(
+    id: string,
+    values: Record<string, ClienteValue>,
+    estado?: Cliente["estado"]
+  ): Promise<void> {
     const finalValues = await uploadFotoIfNeeded(values);
     const { error } = await supabase
       .from("clientes")
-      .update({ values: finalValues })
+      .update(estado ? { values: finalValues, estado } : { values: finalValues })
       .eq("id", id);
     if (error) throw error;
   },

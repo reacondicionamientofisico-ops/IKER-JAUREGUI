@@ -20,7 +20,9 @@ function isFullWidth(type: string): boolean {
   return type === "textarea" || type === "file" || type === "multiselect";
 }
 
-function buildRows<T extends { type: string }>(fields: T[]): T[][] {
+function buildRows<T extends { type: string; groupStart?: string }>(
+  fields: T[]
+): T[][] {
   const rows: T[][] = [];
   let i = 0;
   while (i < fields.length) {
@@ -31,7 +33,7 @@ function buildRows<T extends { type: string }>(fields: T[]): T[][] {
       continue;
     }
     const next = fields[i + 1];
-    if (next && !isFullWidth(next.type)) {
+    if (next && !isFullWidth(next.type) && !next.groupStart) {
       rows.push([field, next]);
       i += 2;
     } else {
@@ -40,6 +42,16 @@ function buildRows<T extends { type: string }>(fields: T[]): T[][] {
     }
   }
   return rows;
+}
+
+function fullName(cliente: Cliente): string {
+  return [
+    cliente.values["nombre"],
+    cliente.values["primerApellido"],
+    cliente.values["segundoApellido"],
+  ]
+    .filter((v) => typeof v === "string" && v.trim() !== "")
+    .join(" ");
 }
 
 export default function ClienteDetail({
@@ -80,7 +92,7 @@ export default function ClienteDetail({
               <div className="profile-photo profile-photo-placeholder">Cargando...</div>
             ))}
           <div>
-            <h2>{formatValue(cliente.values["nombre"])}</h2>
+            <h2>{formatValue(fullName(cliente))}</h2>
             <p className="help">
               Recibido el {new Date(cliente.createdAt).toLocaleString("es-ES")}
             </p>
@@ -165,35 +177,42 @@ export default function ClienteDetail({
                     field.key !== "telefono" &&
                     field.key !== "email" &&
                     field.key !== "nombre" &&
+                    field.key !== "primerApellido" &&
+                    field.key !== "segundoApellido" &&
                     field.key !== "foto"
                 )
               ).map((row) => (
-                <div className="detail-row-line" key={row.map((f) => f.key).join("-")}>
-                  {row.map((field) => (
-                    <div
-                      className={`detail-field${
-                        row.length === 1 && isFullWidth(field.type) ? " full" : ""
-                      }`}
-                      key={field.key}
-                    >
-                      <div className="k">{field.label}</div>
-                      <div className="v">
-                        {field.type === "file" && fotoPath ? (
-                          fotoUrl ? (
-                            <img
-                              src={fotoUrl}
-                              alt="Foto"
-                              style={{ maxWidth: 160, maxHeight: 160, borderRadius: 8 }}
-                            />
+                <div key={row.map((f) => f.key).join("-")}>
+                  {row[0].groupStart && (
+                    <h4 className="detail-group-title">{row[0].groupStart}</h4>
+                  )}
+                  <div className="detail-row-line">
+                    {row.map((field) => (
+                      <div
+                        className={`detail-field${
+                          row.length === 1 && isFullWidth(field.type) ? " full" : ""
+                        }`}
+                        key={field.key}
+                      >
+                        <div className="k">{field.label}</div>
+                        <div className="v">
+                          {field.type === "file" && fotoPath ? (
+                            fotoUrl ? (
+                              <img
+                                src={fotoUrl}
+                                alt="Foto"
+                                style={{ maxWidth: 160, maxHeight: 160, borderRadius: 8 }}
+                              />
+                            ) : (
+                              "Cargando foto..."
+                            )
                           ) : (
-                            "Cargando foto..."
-                          )
-                        ) : (
-                          formatValue(cliente.values[field.key])
-                        )}
+                            formatValue(cliente.values[field.key])
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
               ))}
             </div>
