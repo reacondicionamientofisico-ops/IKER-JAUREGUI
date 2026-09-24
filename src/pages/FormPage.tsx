@@ -1,14 +1,10 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { SECTIONS } from "../data/fields";
-import { clientesStorage } from "../data/storage";
+import { clientesApi } from "../data/clientesApi";
 import FormField, { OTHER_VALUE } from "../components/FormField";
-import type { Cliente, ClienteValue } from "../types";
+import type { ClienteValue } from "../types";
 import logo from "../assets/logo.jpeg";
-
-function makeId(): string {
-  return `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
-}
 
 export default function FormPage() {
   const [started, setStarted] = useState(false);
@@ -18,6 +14,8 @@ export default function FormPage() {
   const [consent, setConsent] = useState(false);
   const [honeypot, setHoneypot] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const setValue = (key: string, value: ClienteValue) => {
     setValues((prev) => ({ ...prev, [key]: value }));
@@ -46,7 +44,7 @@ export default function FormPage() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (honeypot.trim() !== "") return; // bot detectado, ignorar silenciosamente
     if (!validate()) return;
@@ -58,14 +56,18 @@ export default function FormPage() {
       }
     }
 
-    const cliente: Cliente = {
-      id: makeId(),
-      createdAt: new Date().toISOString(),
-      estado: "nuevo",
-      values: finalValues,
-    };
-    clientesStorage.add(cliente);
-    setSubmitted(true);
+    setSubmitting(true);
+    setSubmitError(null);
+    try {
+      await clientesApi.submit(finalValues);
+      setSubmitted(true);
+    } catch {
+      setSubmitError(
+        "No se ha podido enviar el cuestionario. Comprueba tu conexión e inténtalo de nuevo."
+      );
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   if (submitted) {
@@ -155,10 +157,14 @@ export default function FormPage() {
           <span>
             Acepto que mis datos personales y de salud sean utilizados por
             Reacondicionamiento Físico y Salud IJ únicamente para diseñar y
-            adaptar mi plan de entrenamiento y alimentación. Al no disponer
-            todavía de servidor propio, estos datos quedan guardados
-            únicamente en el dispositivo/navegador donde se consulte el
-            listado de usuarios.
+            adaptar mi plan de entrenamiento y alimentación. Estos datos se
+            almacenan de forma segura en una base de datos en la nube, con
+            acceso restringido únicamente al personal autorizado de
+            Reacondicionamiento Físico y Salud IJ. Más información en la{" "}
+            <Link to="/formulario/politica-proteccion-datos">
+              Política de protección de datos
+            </Link>
+            .
           </span>
         </label>
         {errors["__consent"] && (
@@ -166,10 +172,15 @@ export default function FormPage() {
             {errors["__consent"]}
           </p>
         )}
+        {submitError && (
+          <p className="error-text" style={{ textAlign: "center" }}>
+            {submitError}
+          </p>
+        )}
 
         <div className="btn-row">
-          <button className="btn" type="submit">
-            Enviar cuestionario
+          <button className="btn" type="submit" disabled={submitting}>
+            {submitting ? "Enviando..." : "Enviar cuestionario"}
           </button>
         </div>
       </form>

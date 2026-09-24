@@ -1,4 +1,6 @@
+import { useEffect, useState } from "react";
 import { ALL_FIELDS } from "../data/fields";
+import { clientesApi } from "../data/clientesApi";
 import type { Cliente } from "../types";
 
 interface Props {
@@ -20,6 +22,16 @@ export default function ClienteDetail({
   onDelete,
   onEstadoChange,
 }: Props) {
+  const fotoPath = cliente.values["foto"] as string | undefined;
+  const [fotoUrl, setFotoUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    setFotoUrl(null);
+    if (fotoPath) {
+      clientesApi.fotoUrl(fotoPath).then(setFotoUrl);
+    }
+  }, [fotoPath]);
+
   return (
     <div className="modal-backdrop" onClick={onClose}>
       <div className="modal" onClick={(e) => e.stopPropagation()}>
@@ -50,12 +62,16 @@ export default function ClienteDetail({
           <div className="detail-row" key={field.key}>
             <div className="k">{field.label}</div>
             <div className="v">
-              {field.type === "file" && cliente.values[field.key] ? (
-                <img
-                  src={cliente.values[field.key] as string}
-                  alt="Foto"
-                  style={{ maxWidth: 200, maxHeight: 200, borderRadius: 8 }}
-                />
+              {field.type === "file" && fotoPath ? (
+                fotoUrl ? (
+                  <img
+                    src={fotoUrl}
+                    alt="Foto"
+                    style={{ maxWidth: 200, maxHeight: 200, borderRadius: 8 }}
+                  />
+                ) : (
+                  "Cargando foto..."
+                )
               ) : (
                 formatValue(cliente.values[field.key])
               )}
