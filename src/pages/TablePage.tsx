@@ -99,7 +99,6 @@ export default function TablePage() {
               <thead>
                 <tr>
                   <th>Acciones</th>
-                  <th>Fecha alta</th>
                   <th>Nombre y apellidos</th>
                   <th>Edad</th>
                   <th>Localidad</th>
@@ -144,8 +143,7 @@ export default function TablePage() {
                         🗑
                       </button>
                     </td>
-                    <td>{new Date(c.createdAt).toLocaleDateString("es-ES")}</td>
-                    <td>
+                    <td className="cell-name-td">
                       <span className="cell-nombre">
                         {val(c, "foto") && <Avatar fotoPath={val(c, "foto")} />}
                         {sexoIcon(val(c, "sexo")) && (
@@ -156,14 +154,14 @@ export default function TablePage() {
                         {fullName(c) || "—"}
                       </span>
                     </td>
-                    <td>{val(c, "edad") || "—"}</td>
-                    <td>{val(c, "localidad") || "—"}</td>
-                    <td>
+                    <td data-label="Edad">{val(c, "edad") || "—"}</td>
+                    <td data-label="Localidad">{val(c, "localidad") || "—"}</td>
+                    <td data-label="Teléfono / Email">
                       {val(c, "telefono") || "—"}
                       {val(c, "email") ? ` / ${val(c, "email")}` : ""}
                     </td>
-                    <td>{val(c, "objetivosEspecificos") || "—"}</td>
-                    <td>
+                    <td data-label="Objetivo">{val(c, "objetivosEspecificos") || "—"}</td>
+                    <td data-label="Estado">
                       <span className={`badge ${c.estado}`}>
                         {c.estado === "activo" ? "Activo" : "Baja"}
                       </span>

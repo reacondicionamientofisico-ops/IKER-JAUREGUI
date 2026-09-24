@@ -744,3 +744,115 @@ tbody tr:hover {
   text-align: center;
   margin-top: 30px;
 }
+
+@media (max-width: 680px) {
+  .container {
+    padding: 0 14px 40px;
+  }
+
+  .header {
+    padding: 20px 14px 16px;
+    flex-wrap: wrap;
+  }
+
+  .header img {
+    width: 56px;
+    height: 56px;
+  }
+
+  .header .titles h1 {
+    font-size: 1.15rem;
+  }
+
+  .header .titles p {
+    font-size: 0.72rem;
+  }
+
+  .nav {
+    width: 100%;
+    margin-left: 0;
+    margin-top: 12px;
+  }
+
+  .nav a,
+  .nav button {
+    flex: 1 1 0;
+    padding: 10px 12px;
+    font-size: 0.8rem;
+  }
+
+  .toolbar .btn {
+    width: 100%;
+  }
+
+  .table-wrap {
+    overflow-x: visible;
+    background: transparent;
+    box-shadow: none;
+    border-radius: 0;
+  }
+
+  table,
+  thead,
+  tbody,
+  tr,
+  td {
+    display: block;
+    width: 100%;
+  }
+
+  thead {
+    display: none;
+  }
+
+  tbody tr {
+    background: var(--color-blanco);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 12px 14px;
+    margin-bottom: 14px;
+  }
+
+  tbody tr:hover {
+    background: var(--color-blanco);
+  }
+
+  tbody td {
+    white-space: normal;
+    border-bottom: none;
+    padding: 6px 0;
+  }
+
+  .row-actions {
+    justify-content: flex-end;
+    padding: 0 0 10px;
+    margin-bottom: 6px;
+    border-bottom: 1px solid var(--color-crema);
+  }
+
+  .cell-name-td {
+    padding-top: 0;
+  }
+
+  .cell-nombre {
+    font-weight: 700;
+    font-size: 1rem;
+  }
+
+  td[data-label] {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+  }
+
+  td[data-label]::before {
+    content: attr(data-label);
+    font-weight: 600;
+    color: var(--color-verde);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    flex: 0 0 auto;
+  }
+}

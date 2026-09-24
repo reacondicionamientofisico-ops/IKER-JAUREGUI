@@ -75,6 +75,21 @@ export default function ClienteFormModal({ cliente, onClose, onSaved }: Props) {
         </button>
         <h2>{cliente ? "Editar usuario" : "Añadir usuario"}</h2>
         <form onSubmit={handleSubmit}>
+          <div className="btn-row" style={{ marginBottom: 16 }}>
+            <button className="btn" type="submit" disabled={saving}>
+              {saving ? "Guardando..." : "Guardar"}
+            </button>
+            <button className="btn secondary" type="button" onClick={onClose}>
+              Cancelar
+            </button>
+          </div>
+
+          {error && (
+            <p className="error-text" style={{ textAlign: "center" }}>
+              {error}
+            </p>
+          )}
+
           <div className="field" style={{ maxWidth: 240 }}>
             <label htmlFor="estado-select-modal">Estado</label>
             <select

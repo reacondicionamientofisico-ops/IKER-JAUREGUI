@@ -46,6 +46,22 @@ create policy "autenticados pueden borrar clientes"
   to authenticated
   using (true);
 
+-- /clientes es de acceso directo sin login, así que anon también necesita
+-- poder actualizar (cambiar estado, editar ficha) y borrar, igual que ya
+-- puede insertar y leer.
+create policy "anon puede actualizar clientes"
+  on public.clientes
+  for update
+  to anon
+  using (true)
+  with check (true);
+
+create policy "anon puede borrar clientes"
+  on public.clientes
+  for delete
+  to anon
+  using (true);
+
 -- 2) Bucket de Storage para las fotos ----------------------------------
 insert into storage.buckets (id, name, public)
 values ('fotos-clientes', 'fotos-clientes', false)
