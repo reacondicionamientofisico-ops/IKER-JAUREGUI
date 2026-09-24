@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { clientesApi } from "../data/clientesApi";
 import { downloadCsv } from "../data/csv";
-import { useAuth } from "../lib/auth";
 import ClienteDetail from "./ClienteDetail";
 import type { Cliente } from "../types";
 
@@ -12,7 +11,6 @@ function val(c: Cliente, key: string): string {
 }
 
 export default function TablePage() {
-  const { signOut } = useAuth();
   const [clientes, setClientes] = useState<Cliente[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -48,9 +46,6 @@ export default function TablePage() {
       <div className="toolbar">
         <button className="btn secondary" onClick={() => downloadCsv(filtered)}>
           Exportar CSV
-        </button>
-        <button className="btn secondary" onClick={() => signOut()}>
-          Cerrar sesión
         </button>
       </div>
 
