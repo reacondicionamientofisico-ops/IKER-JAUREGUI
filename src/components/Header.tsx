@@ -20,6 +20,11 @@ export default function Header() {
           <Link to="/formulario">Formulario</Link>
         </nav>
       )}
+      {!isClientesRoute && (
+        <nav className="nav">
+          <Link to="/clientes">Inicio</Link>
+        </nav>
+      )}
     </header>
   );
 }

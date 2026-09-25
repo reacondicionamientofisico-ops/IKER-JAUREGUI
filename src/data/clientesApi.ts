@@ -12,7 +12,9 @@ function fromRow(row: ClienteRow): Cliente {
   return {
     id: row.id,
     createdAt: row.created_at,
-    estado: row.estado,
+    // Datos antiguos pueden tener valores de estado obsoletos (p. ej. "nuevo")
+    // que no encajan con las únicas dos opciones válidas del selector.
+    estado: row.estado === "baja" ? "baja" : "activo",
     values: row.values,
   };
 }
