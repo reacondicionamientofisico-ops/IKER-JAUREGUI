@@ -31,3 +31,5 @@ dist-ssr
 
 # Build local de valoración
 dist-valoracion
+
+.vercel
