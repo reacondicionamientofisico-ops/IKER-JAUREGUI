@@ -1,6 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import ValoracionTabs from "../components/ValoracionTabs";
 import { valoracionesStore } from "../data/valoracionesStore";
 import type { Valoracion } from "../data/valoracionesStore";
 import { fmsSideTotal, fmsTotal } from "../data/valoracionTests";
@@ -11,28 +10,51 @@ const fmt = (n: number | null) => (n === null ? "—" : String(n));
 
 export default function ValoracionTablePage() {
   const navigate = useNavigate();
-  const [items, setItems] = useState<Valoracion[]>(() => valoracionesStore.list());
+  const [items, setItems] = useState<Valoracion[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [viewId, setViewId] = useState<string | null>(null);
   const viewed = items.find((v) => v.id === viewId) ?? null;
 
+  useEffect(() => {
+    let cancelado = false;
+    valoracionesStore
+      .list()
+      .then((list) => {
+        if (!cancelado) setItems(list);
+      })
+      .catch(() => {
+        if (!cancelado) setError("No se han podido cargar las valoraciones.");
+      })
+      .finally(() => {
+        if (!cancelado) setLoading(false);
+      });
+    return () => {
+      cancelado = true;
+    };
+  }, []);
+
   const edit = (v: Valoracion) => navigate(`/valoracion/editar/${v.id}`);
 
-  const remove = (v: Valoracion) => {
+  const remove = async (v: Valoracion) => {
     if (!window.confirm(`¿Eliminar la valoración de ${v.datos.nombre}?`)) return;
-    valoracionesStore.remove(v.id);
-    setItems(valoracionesStore.list());
-    setViewId(null);
+    try {
+      await valoracionesStore.remove(v.id);
+      setItems((prev) => prev.filter((x) => x.id !== v.id));
+      setViewId(null);
+    } catch {
+      setError("No se ha podido eliminar la valoración.");
+    }
   };
 
   return (
     <div className="container container-wide valoracion">
-      <ValoracionTabs />
       <div className="card">
         <h2 className="section-title">Valoraciones registradas</h2>
-        <p className="help">
-          Los datos se guardan solo en este navegador. Al borrar los datos del navegador se pierden.
-        </p>
-        {items.length === 0 ? (
+        {error && <p className="error-text">{error}</p>}
+        {loading ? (
+          <p>Cargando...</p>
+        ) : items.length === 0 ? (
           <p>Todavía no hay valoraciones registradas.</p>
         ) : (
           <div className="table-scroll">

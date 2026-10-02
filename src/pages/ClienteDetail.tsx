@@ -1,8 +1,9 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { SECTIONS } from "../data/fields";
 import { clientesApi } from "../data/clientesApi";
 import { valoracionesStore } from "../data/valoracionesStore";
+import type { Valoracion } from "../data/valoracionesStore";
 import type { Cliente } from "../types";
 import { ValoracionContent } from "./ValoracionDetail";
 
@@ -76,11 +77,24 @@ export default function ClienteDetail({
   const navigate = useNavigate();
   const [tab, setTab] = useState<string>(SECTIONS[0].key);
   // Última valoración del usuario (vinculada por id, o por nombre en las antiguas).
-  const valoracion = useMemo(() => {
+  const [valoracion, setValoracion] = useState<Valoracion | undefined>();
+  useEffect(() => {
+    let cancelado = false;
     const nombre = fullName(cliente);
-    return valoracionesStore
+    valoracionesStore
       .list()
-      .find((v) => (v.datos.clienteId ? v.datos.clienteId === cliente.id : v.datos.nombre === nombre));
+      .then((list) => {
+        if (cancelado) return;
+        setValoracion(
+          list.find((v) => (v.datos.clienteId ? v.datos.clienteId === cliente.id : v.datos.nombre === nombre))
+        );
+      })
+      .catch(() => {
+        if (!cancelado) setValoracion(undefined);
+      });
+    return () => {
+      cancelado = true;
+    };
   }, [cliente]);
 
   const telefonoRaw = cliente.values["telefono"] as string | undefined;

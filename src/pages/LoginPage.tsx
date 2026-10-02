@@ -25,7 +25,7 @@ export default function LoginPage() {
 
   return (
     <div className="container">
-      <div className="card intro-card">
+      <div className="card intro-card login-card">
         <img src={logo} alt="Logo IJ" />
         <h2>Acceso administración</h2>
         <form onSubmit={handleSubmit}>

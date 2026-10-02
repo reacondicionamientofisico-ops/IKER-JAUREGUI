@@ -98,3 +98,26 @@ create policy "autenticados pueden borrar fotos"
 -- Crea el usuario admin manualmente en:
 -- Dashboard > Authentication > Users > Add user (email + contraseña)
 -- Ese email/contraseña serán los que uses para entrar en /login de la app.
+
+-- 4) Valoraciones físicas -------------------------------------------------
+-- Datos de salud: solo accesibles con sesión (rol authenticated), nunca anon.
+create table if not exists public.valoraciones (
+  id uuid primary key default gen_random_uuid(),
+  created_at timestamptz not null default now(),
+  datos jsonb not null,
+  values jsonb not null
+);
+
+alter table public.valoraciones enable row level security;
+
+create policy "autenticados pueden leer valoraciones"
+  on public.valoraciones for select to authenticated using (true);
+
+create policy "autenticados pueden insertar valoraciones"
+  on public.valoraciones for insert to authenticated with check (true);
+
+create policy "autenticados pueden actualizar valoraciones"
+  on public.valoraciones for update to authenticated using (true) with check (true);
+
+create policy "autenticados pueden borrar valoraciones"
+  on public.valoraciones for delete to authenticated using (true);

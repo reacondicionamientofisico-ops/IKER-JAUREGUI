@@ -4,6 +4,7 @@ import type { Cliente, ClienteValue } from "../types";
 import { useNavigate, useParams } from "react-router-dom";
 import ChoiceButtons from "../components/ChoiceButtons";
 import { valoracionesStore } from "../data/valoracionesStore";
+import type { Valoracion } from "../data/valoracionesStore";
 import {
   EQUILIBRIO_DIRECCIONES,
   PERIMETRO_LIMITE,
@@ -50,9 +51,41 @@ function Images({ files }: { files: string[] }) {
   );
 }
 
+// Al editar, primero se carga la valoración y luego se monta el formulario con sus datos.
 export default function ValoracionPage() {
   const { id } = useParams();
-  const existing = id ? valoracionesStore.get(id) : undefined;
+  const [existing, setExisting] = useState<Valoracion | undefined>();
+  const [cargando, setCargando] = useState(!!id);
+  const [errorCarga, setErrorCarga] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!id) return;
+    let cancelado = false;
+    valoracionesStore
+      .get(id)
+      .then((v) => {
+        if (cancelado) return;
+        if (v) setExisting(v);
+        else setErrorCarga("No se ha encontrado la valoración.");
+      })
+      .catch(() => {
+        if (!cancelado) setErrorCarga("No se ha podido cargar la valoración.");
+      })
+      .finally(() => {
+        if (!cancelado) setCargando(false);
+      });
+    return () => {
+      cancelado = true;
+    };
+  }, [id]);
+
+  if (cargando) return <div className="container valoracion"><div className="card"><p>Cargando...</p></div></div>;
+  if (errorCarga) return <div className="container valoracion"><div className="card"><p className="error-text">{errorCarga}</p></div></div>;
+  return <ValoracionForm key={existing?.id ?? "nuevo"} existing={existing} />;
+}
+
+function ValoracionForm({ existing }: { existing?: Valoracion }) {
+  const [saving, setSaving] = useState(false);
   const [datos, setDatos] = useState(
     existing?.datos ?? { nombre: "", deporte: "", sexo: "", fechaNac: "", fechaToma: today() }
   );
@@ -110,18 +143,21 @@ export default function ValoracionPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [clientes, preseleccion]);
 
-  const save = () => {
+  const save = async () => {
     if (datos.nombre.trim() === "") {
       setError("Selecciona un usuario.");
       return;
     }
+    setError(null);
+    setSaving(true);
     try {
       const limpio = { ...datos, nombre: datos.nombre.trim() };
-      if (existing) valoracionesStore.update(existing.id, limpio, s);
-      else valoracionesStore.add(limpio, s);
+      if (existing) await valoracionesStore.update(existing.id, limpio, s);
+      else await valoracionesStore.add(limpio, s);
       navigate("/valoracion/tabla");
     } catch {
-      setError("No se ha podido guardar en este navegador.");
+      setError("No se ha podido guardar la valoración. Revisa la conexión y que hayas iniciado sesión.");
+      setSaving(false);
     }
   };
 
@@ -378,8 +414,8 @@ export default function ValoracionPage() {
           </p>
         )}
         <div className="btn-row">
-          <button type="button" className="btn" onClick={save}>
-            {existing ? "Guardar cambios" : "Guardar valoración"}
+          <button type="button" className="btn" onClick={() => void save()} disabled={saving}>
+            {saving ? "Guardando..." : existing ? "Guardar cambios" : "Guardar valoración"}
           </button>
         </div>
       </div>

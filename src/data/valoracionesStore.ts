@@ -1,5 +1,5 @@
-// Almacén local (solo este navegador). Aislado aquí para poder sustituirlo
-// por un backend sin tocar las páginas.
+import { supabase } from "../lib/supabaseClient";
+
 export interface DatosBasicos {
   clienteId?: string;
   nombre: string;
@@ -16,39 +16,45 @@ export interface Valoracion {
   values: Record<string, string>;
 }
 
-const KEY = "ij.valoraciones.v1";
-
-function read(): Valoracion[] {
-  try {
-    const raw = localStorage.getItem(KEY);
-    const parsed: unknown = raw ? JSON.parse(raw) : [];
-    return Array.isArray(parsed) ? (parsed as Valoracion[]) : [];
-  } catch {
-    return [];
-  }
+interface ValoracionRow {
+  id: string;
+  created_at: string;
+  datos: DatosBasicos;
+  values: Record<string, string>;
 }
 
-function write(items: Valoracion[]): void {
-  localStorage.setItem(KEY, JSON.stringify(items));
-}
+const fromRow = (r: ValoracionRow): Valoracion => ({
+  id: r.id,
+  createdAt: r.created_at,
+  datos: r.datos,
+  values: r.values,
+});
 
+// Tabla `valoraciones` en Supabase (ver supabase-setup.sql). Solo usuarios con sesión.
 export const valoracionesStore = {
-  list(): Valoracion[] {
-    return read().sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+  async list(): Promise<Valoracion[]> {
+    const { data, error } = await supabase
+      .from("valoraciones")
+      .select("*")
+      .order("created_at", { ascending: false });
+    if (error) throw error;
+    return (data as ValoracionRow[]).map(fromRow);
   },
-  add(datos: DatosBasicos, values: Record<string, string>): void {
-    write([
-      ...read(),
-      { id: crypto.randomUUID(), createdAt: new Date().toISOString(), datos, values },
-    ]);
+  async add(datos: DatosBasicos, values: Record<string, string>): Promise<void> {
+    const { error } = await supabase.from("valoraciones").insert({ datos, values });
+    if (error) throw error;
   },
-  get(id: string): Valoracion | undefined {
-    return read().find((v) => v.id === id);
+  async get(id: string): Promise<Valoracion | undefined> {
+    const { data, error } = await supabase.from("valoraciones").select("*").eq("id", id).maybeSingle();
+    if (error) throw error;
+    return data ? fromRow(data as ValoracionRow) : undefined;
   },
-  update(id: string, datos: DatosBasicos, values: Record<string, string>): void {
-    write(read().map((v) => (v.id === id ? { ...v, datos, values } : v)));
+  async update(id: string, datos: DatosBasicos, values: Record<string, string>): Promise<void> {
+    const { error } = await supabase.from("valoraciones").update({ datos, values }).eq("id", id);
+    if (error) throw error;
   },
-  remove(id: string): void {
-    write(read().filter((v) => v.id !== id));
+  async remove(id: string): Promise<void> {
+    const { error } = await supabase.from("valoraciones").delete().eq("id", id);
+    if (error) throw error;
   },
 };
