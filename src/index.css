@@ -58,6 +58,14 @@ button {
   max-width: 1400px;
 }
 
+.container.valoracion:not(.container-wide) {
+  max-width: 1100px;
+}
+
+.header.header-medium {
+  max-width: 1100px;
+}
+
 .header {
   display: flex;
   align-items: center;
@@ -505,8 +513,6 @@ thead th {
   color: var(--color-crema);
   padding: 12px 14px;
   white-space: nowrap;
-  position: sticky;
-  top: 0;
 }
 
 tbody td {
@@ -690,12 +696,16 @@ tbody tr:hover {
 }
 
 .detail-section-title {
-  color: var(--color-verde);
-  font-size: 1.05rem;
-  margin: 0 0 6px;
-  padding-bottom: 6px;
-  border-bottom: 2px solid var(--color-verde);
+  color: var(--color-acento);
+  font-size: 1.6rem;
+  margin: 0 0 8px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--color-acento);
 }
+
+.detail-block { scroll-margin-top: 72px; }
+.detail-block + .detail-block { margin-top: 36px; }
+.sticky-tabs { position: sticky; top: 0; z-index: 5; background: var(--color-blanco); margin-top: 8px; }
 
 .detail-grid {
   display: flex;
@@ -855,4 +865,188 @@ tbody tr:hover {
     letter-spacing: 0.03em;
     flex: 0 0 auto;
   }
+}
+
+.valoracion-glossary { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+.valoracion-glossary th, .valoracion-glossary td { border: 1px solid #384730; padding: 8px; text-align: left; }
+.valoracion-glossary th { background: #EEE7DD; }
+.valoracion-glossary td:first-child { text-align: center; width: 90px; }
+.valoracion-images { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin: 0 0 16px; }
+.valoracion-images img { max-width: 100%; max-height: 240px; object-fit: contain; border-radius: 6px; }
+.table-scroll { overflow-x: auto; }
+.valoracion-glossary td input { width: 90px; }
+.valoracion-puntos { font-size: 0.9rem; margin: 0 0 16px; padding: 10px 14px; border: 1px solid #384730; border-radius: 6px; background: #fff; }
+.valoracion-puntos ul { margin: 6px 0 0; padding-left: 20px; }
+
+/* Página de valoración: tipografía más compacta */
+.valoracion { font-size: 0.85rem; }
+.valoracion .section-title { font-size: 1.2rem; }
+.valoracion .subsection-title { font-size: 1.05rem; }
+.valoracion .field label { font-size: 0.8rem; margin-bottom: 6px; }
+.valoracion .field .help, .valoracion .help { font-size: 0.75rem; }
+.valoracion .field input[type="text"],
+.valoracion .field input[type="number"],
+.valoracion .field input[type="date"],
+.valoracion .field select,
+.valoracion .field textarea { font-size: 0.85rem; padding: 8px 10px; box-sizing: border-box; max-width: 100%; }
+.valoracion .valoracion-glossary { font-size: 0.78rem; }
+.valoracion .valoracion-puntos { font-size: 0.78rem; }
+.valoracion .btn { font-size: 0.85rem; }
+.valoracion .valoracion-glossary { table-layout: fixed; }
+.valoracion .valoracion-glossary th, .valoracion .valoracion-glossary td { white-space: normal; overflow-wrap: anywhere; }
+.valoracion .valoracion-glossary th:first-child, .valoracion .valoracion-glossary td:first-child { width: 80px; }
+.valoracion .valoracion-rom td input { width: 80px; box-sizing: border-box; }
+.valoracion .valoracion-rom { table-layout: auto; }
+
+.header .header-section {
+  margin-left: auto;
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 1.3rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-verde);
+}
+@media (max-width: 600px) {
+  .header .header-section { margin-left: 0; width: 100%; font-size: 1.05rem; }
+}
+.valoracion .valoracion-glossary th { color: var(--color-verde); font-weight: 700; }
+.valoracion .valoracion-data { table-layout: auto; }
+.valoracion .valoracion-data th, .valoracion .valoracion-data td { white-space: nowrap; overflow-wrap: normal; }
+.valoracion .valoracion-data td:first-child, .valoracion .valoracion-data th:first-child { width: auto; text-align: left; }
+.valoracion .valoracion-data .btn { padding: 6px 14px; font-size: 0.78rem; white-space: nowrap; }
+
+/* ---------- Móvil ---------- */
+@media (max-width: 600px) {
+  .header { flex-wrap: wrap; gap: 4px 12px; }
+  .header .header-section { width: auto; margin-left: 0; flex-basis: 100%; font-size: 0.95rem; }
+  .valoracion .card { padding: 16px; }
+  .valoracion .valoracion-images img { max-height: 160px; }
+  /* tabla de listado: solo lo esencial, el resto está en el detalle */
+  .valoracion .valoracion-list th:nth-child(4),
+  .valoracion .valoracion-list td:nth-child(4),
+  .valoracion .valoracion-list th:nth-child(5),
+  .valoracion .valoracion-list td:nth-child(5),
+  .valoracion .valoracion-list th:nth-child(6),
+  .valoracion .valoracion-list td:nth-child(6),
+  .valoracion .valoracion-list th:nth-child(7),
+  .valoracion .valoracion-list td:nth-child(7),
+  .valoracion .valoracion-list th:nth-child(8),
+  .valoracion .valoracion-list td:nth-child(8) { display: none; }
+  .valoracion .valoracion-rom td input { width: 64px; }
+  .valoracion .valoracion-glossary th,
+  .valoracion .valoracion-glossary td { padding: 6px 4px; }
+  .valoracion .modal { padding: 16px; max-height: 92vh; overflow-y: auto; }
+}
+
+/* Botones de selección única */
+.choice-group { display: flex; flex-wrap: wrap; gap: 8px; }
+.choice-btn {
+  flex: 1 1 0; min-width: 56px; padding: 10px 14px;
+  border: 1px solid var(--color-verde); border-radius: 999px;
+  background: var(--color-blanco); color: var(--color-verde);
+  font-family: inherit; font-size: 0.9rem; font-weight: 600; cursor: pointer;
+}
+.choice-btn:hover { background: var(--color-crema); }
+.choice-btn.selected { background: var(--color-verde); color: var(--color-crema); }
+
+/* En móvil, las tablas de valoración vuelven a ser tablas (la regla global las apila) */
+@media (max-width: 680px) {
+  .valoracion table.valoracion-glossary { display: table; width: 100%; }
+  .valoracion table.valoracion-glossary thead { display: table-header-group; }
+  .valoracion table.valoracion-glossary tbody { display: table-row-group; }
+  .valoracion table.valoracion-glossary tr {
+    display: table-row; background: none; box-shadow: none; border-radius: 0; padding: 0; margin: 0;
+  }
+  .valoracion table.valoracion-glossary th,
+  .valoracion table.valoracion-glossary td { display: table-cell; width: auto; padding: 6px 6px; }
+  .valoracion table.valoracion-glossary td:first-child { width: auto; }
+  .valoracion table.valoracion-glossary .row-actions { display: table-cell; white-space: nowrap; border-bottom: 1px solid #384730; margin: 0; }
+}
+@media (max-width: 680px) {
+  .valoracion .valoracion-list td:nth-child(3) { white-space: normal; overflow-wrap: anywhere; }
+  .valoracion .valoracion-list .btn-icon { width: 30px; height: 30px; font-size: 0.8rem; }
+}
+@media (max-width: 680px) {
+  .valoracion .valoracion-list th, .valoracion .valoracion-list td { padding: 6px 3px; font-size: 0.75rem; }
+}
+
+/* Menú interactivo de apartados (valoración) */
+.valoracion-menu {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 10px 4px;
+  margin-bottom: 12px;
+  background: var(--color-crema);
+  border-bottom: 1px solid var(--color-borde);
+  scrollbar-width: none;
+}
+.valoracion-menu::-webkit-scrollbar {
+  display: none;
+}
+.valoracion-menu button {
+  flex: 0 0 auto;
+  padding: 8px 14px;
+  border: 1px solid var(--color-verde);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--color-verde);
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.valoracion-menu button:hover {
+  background: rgba(56, 71, 48, 0.1);
+}
+.valoracion-menu button.active {
+  background: var(--color-verde);
+  color: var(--color-blanco);
+}
+.valoracion .card {
+  scroll-margin-top: calc(var(--sticky-h, 0px) + 12px);
+}
+html {
+  scroll-behavior: smooth;
+}
+
+/* Campos que vienen de la ficha del usuario: solo lectura */
+.valoracion .field input:disabled { background: #EEE7DD; color: #384730; cursor: not-allowed; opacity: 1; -webkit-text-fill-color: #384730; }
+
+/* Pestañas internas (ficha de usuario y valoración) */
+.inner-tabs { display: flex; gap: 4px; flex-wrap: wrap; border-bottom: 2px solid var(--color-verde); margin: 16px 0 12px; }
+.inner-tab { background: none; border: none; padding: 10px 16px; font: inherit; font-weight: 600; font-size: 0.85rem; color: var(--color-verde); cursor: pointer; border-radius: 8px 8px 0 0; }
+.inner-tab:hover { background: rgba(56, 71, 48, 0.08); }
+.inner-tab.active { background: var(--color-verde); color: #fff; }
+.inner-tab:focus-visible { outline: 2px solid var(--color-acento); outline-offset: -2px; }
+.main-tabs .inner-tab { font-size: 0.95rem; padding: 12px 24px; }
+.inner-panel { padding: 4px 0 8px; }
+.valoracion-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+@media (max-width: 600px) { .inner-tab { padding: 8px 10px; font-size: 0.78rem; } }
+
+/* Cabecera inmovilizada en todas las páginas */
+.sticky-top { position: sticky; top: 0; z-index: 50; background: var(--color-crema); box-shadow: 0 1px 0 var(--color-borde); }
+.sticky-top .header { padding-top: 14px; padding-bottom: 10px; }
+.sticky-top .sticky-sub { padding-bottom: 0; }
+.sticky-top .sticky-sub .nav { margin: 6px 0 !important; }
+.sticky-top .valoracion-menu { margin-bottom: 0; border-bottom: none; }
+
+.header-right { margin-left: auto; display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 8px 18px; }
+.header-right .nav { margin-left: 0; }
+.header-right .header-section { margin-left: 0; }
+.sticky-top .header img { width: 52px; height: 52px; }
+.sticky-top .header .titles h1 { font-size: 1.3rem; margin-bottom: 0; }
+.sticky-top .header .titles p { font-size: 0.72rem; }
+.sticky-top .header { padding-top: 8px; padding-bottom: 6px; }
+.sticky-top .valoracion-menu { padding: 6px 4px; }
+.sticky-top .valoracion-menu button { padding: 5px 12px; font-size: 0.82rem; }
+.nav.nav-sub a { background: var(--color-acento, #b08d57); border-color: var(--color-acento, #b08d57); color: #fff; padding: 8px 16px; }
+.nav.nav-sub a.active, .nav.nav-sub a:hover { background: #7a5c2e; border-color: #7a5c2e; color: #fff; }
+@media (max-width: 680px) {
+  .header-right { margin-left: 0; width: 100%; justify-content: flex-start; gap: 6px 10px; }
+  .sticky-top .header img { width: 40px; height: 40px; }
+  .sticky-top .header .titles h1 { font-size: 1rem; }
+  .sticky-top .header .titles p { display: none; }
 }
