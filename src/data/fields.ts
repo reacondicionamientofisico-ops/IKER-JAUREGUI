@@ -71,12 +71,17 @@ export const SECTIONS: SectionDef[] = [
         label: "DNI o Pasaporte (número completo CON letra)",
         type: "text",
       },
+    ],
+  },
+  {
+    key: "situacion",
+    title: "Situación actual",
+    fields: [
       {
         key: "altura",
         label: "Altura (cm)",
         type: "select",
         options: opts(range(150, 210).map(String)),
-        groupStart: "Situación actual",
       },
       {
         key: "peso",

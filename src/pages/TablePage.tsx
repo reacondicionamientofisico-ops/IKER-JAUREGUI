@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { clientesApi } from "../data/clientesApi";
 import ClienteDetail from "./ClienteDetail";
 import ClienteFormModal from "./ClienteFormModal";
@@ -79,6 +80,9 @@ export default function TablePage() {
         <button className="btn" onClick={() => setAdding(true)}>
           Añadir
         </button>
+        <Link className="btn secondary" to="/formulario">
+          Formulario Inscripción
+        </Link>
       </div>
 
       {loading && <p className="help">Cargando usuarios...</p>}

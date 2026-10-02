@@ -1,7 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { SECTIONS } from "../data/fields";
 import { clientesApi } from "../data/clientesApi";
+import { valoracionesStore } from "../data/valoracionesStore";
 import type { Cliente } from "../types";
+import { ValoracionContent } from "./ValoracionDetail";
 
 interface Props {
   cliente: Cliente;
@@ -70,50 +73,21 @@ export default function ClienteDetail({
     }
   }, [fotoPath]);
 
+  const navigate = useNavigate();
+  const [tab, setTab] = useState<string>(SECTIONS[0].key);
+  // Última valoración del usuario (vinculada por id, o por nombre en las antiguas).
+  const valoracion = useMemo(() => {
+    const nombre = fullName(cliente);
+    return valoracionesStore
+      .list()
+      .find((v) => (v.datos.clienteId ? v.datos.clienteId === cliente.id : v.datos.nombre === nombre));
+  }, [cliente]);
+
   const telefonoRaw = cliente.values["telefono"] as string | undefined;
   const telefonoDigits = telefonoRaw ? telefonoRaw.replace(/[^\d+]/g, "") : "";
   const emailRaw = cliente.values["email"] as string | undefined;
 
-  return (
-    <div className="modal-backdrop" onClick={onClose}>
-      <div className="modal" onClick={(e) => e.stopPropagation()}>
-        <button className="close-btn" onClick={onClose} aria-label="Cerrar">
-          ×
-        </button>
-        <div className="profile-header">
-          {fotoPath &&
-            (fotoUrl ? (
-              <img
-                src={fotoUrl}
-                alt="Foto"
-                className="profile-photo"
-              />
-            ) : (
-              <div className="profile-photo profile-photo-placeholder">Cargando...</div>
-            ))}
-          <div>
-            <h2>{formatValue(fullName(cliente))}</h2>
-            <p className="help">
-              Recibido el {new Date(cliente.createdAt).toLocaleString("es-ES")}
-            </p>
-          </div>
-        </div>
-
-        <div className="field" style={{ maxWidth: 240 }}>
-          <label htmlFor="estado-select">Estado</label>
-          <select
-            id="estado-select"
-            value={cliente.estado}
-            onChange={(e) =>
-              onEstadoChange(cliente.id, e.target.value as Cliente["estado"])
-            }
-          >
-            <option value="activo">Activo</option>
-            <option value="baja">Baja</option>
-          </select>
-        </div>
-
-        {(telefonoRaw || emailRaw) && (
+  const contactoBlock = (telefonoRaw || emailRaw) && (
           <div className="detail-section">
             <h3 className="detail-section-title">Contacto</h3>
             <div className="detail-grid">
@@ -165,11 +139,73 @@ export default function ClienteDetail({
               ))}
             </div>
           </div>
-        )}
+        );
 
-        {SECTIONS.map((section) => (
-          <div className="detail-section" key={section.key}>
+  const goTo = (key: string) => {
+    setTab(key);
+    document.getElementById(`sec-${key}`)?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
+  return (
+    <div className="modal-backdrop" onClick={onClose}>
+      <div className="modal" onClick={(e) => e.stopPropagation()}>
+        <button className="close-btn" onClick={onClose} aria-label="Cerrar">
+          ×
+        </button>
+        <div className="profile-header">
+          {fotoPath &&
+            (fotoUrl ? (
+              <img
+                src={fotoUrl}
+                alt="Foto"
+                className="profile-photo"
+              />
+            ) : (
+              <div className="profile-photo profile-photo-placeholder">Cargando...</div>
+            ))}
+          <div>
+            <h2>{formatValue(fullName(cliente))}</h2>
+            <p className="help">
+              Recibido el {new Date(cliente.createdAt).toLocaleString("es-ES")}
+            </p>
+          </div>
+        </div>
+
+        <div className="field" style={{ maxWidth: 240 }}>
+          <label htmlFor="estado-select">Estado</label>
+          <select
+            id="estado-select"
+            value={cliente.estado}
+            onChange={(e) =>
+              onEstadoChange(cliente.id, e.target.value as Cliente["estado"])
+            }
+          >
+            <option value="activo">Activo</option>
+            <option value="baja">Baja</option>
+          </select>
+        </div>
+
+        <div className="inner-tabs main-tabs sticky-tabs" role="tablist">
+          {[...SECTIONS.map((s) => ({ key: s.key, title: s.title })), { key: "valoracion", title: "Valoración" }].map(
+            (section) => (
+              <button
+                key={section.key}
+                type="button"
+                role="tab"
+                aria-selected={tab === section.key}
+                className={`inner-tab${tab === section.key ? " active" : ""}`}
+                onClick={() => goTo(section.key)}
+              >
+                {section.title}
+              </button>
+            )
+          )}
+        </div>
+
+        {SECTIONS.map((section, idx) => (
+          <div className="detail-block" id={`sec-${section.key}`} key={section.key}>
             <h3 className="detail-section-title">{section.title}</h3>
+            {idx === 0 && contactoBlock}
             <div className="detail-grid">
               {buildRows(
                 section.fields.filter(
@@ -218,6 +254,26 @@ export default function ClienteDetail({
             </div>
           </div>
         ))}
+
+        <div className="detail-block" id="sec-valoracion">
+          <div className="detail-section">
+            <h3 className="detail-section-title">Valoración</h3>
+            {valoracion ? (
+              <ValoracionContent
+                item={valoracion}
+                onEdit={() => navigate(`/valoracion/editar/${valoracion.id}`)}
+              />
+            ) : (
+              <div className="empty-state" style={{ padding: "32px 0" }}>
+                <p>Este usuario todavía no tiene valoración.</p>
+                <button className="btn" onClick={() => navigate(`/valoracion?cliente=${cliente.id}`)}>
+                  Crear valoración
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+
 
         <div className="btn-row">
           <button

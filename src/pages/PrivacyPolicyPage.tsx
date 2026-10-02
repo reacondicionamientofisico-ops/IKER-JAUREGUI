@@ -1,11 +1,12 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 export default function PrivacyPolicyPage() {
+  const back = useLocation().pathname.startsWith("/cuestionario") ? "/cuestionario" : "/formulario";
   return (
     <div className="container">
       <div className="card policy">
         <div className="btn-row policy-top-actions">
-          <Link className="btn secondary" to="/formulario">
+          <Link className="btn secondary" to={back}>
             Volver al formulario
           </Link>
         </div>
@@ -255,7 +256,7 @@ export default function PrivacyPolicyPage() {
         </p>
 
         <div className="btn-row">
-          <Link className="btn secondary" to="/formulario">
+          <Link className="btn secondary" to={back}>
             Volver al formulario
           </Link>
         </div>

@@ -7,7 +7,8 @@ import type { ClienteValue } from "../types";
 import { calcularEdad } from "../lib/age";
 import logo from "../assets/logo.jpeg";
 
-export default function FormPage() {
+export default function FormPage({ publico = false }: { publico?: boolean }) {
+  const base = publico ? "/cuestionario" : "/formulario";
   const [started, setStarted] = useState(false);
   const [values, setValues] = useState<Record<string, ClienteValue>>({});
   const [otherTexts, setOtherTexts] = useState<Record<string, string>>({});
@@ -17,6 +18,19 @@ export default function FormPage() {
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+
+  const [linkCopied, setLinkCopied] = useState(false);
+
+  const handleCopyLink = async () => {
+    const url = `${window.location.origin}/cuestionario`;
+    try {
+      await navigator.clipboard.writeText(url);
+      setLinkCopied(true);
+      setTimeout(() => setLinkCopied(false), 2500);
+    } catch {
+      window.prompt("Copia este enlace y envíalo al usuario:", url);
+    }
+  };
 
   const setValue = (key: string, value: ClienteValue) => {
     setValues((prev) => ({ ...prev, [key]: value }));
@@ -112,10 +126,19 @@ export default function FormPage() {
             <button className="btn" onClick={() => setStarted(true)}>
               Empezar cuestionario
             </button>
-            <Link className="btn secondary" to="/formulario/politica-proteccion-datos">
-              Política de protección de datos
-            </Link>
+            {!publico && (
+              <Link className="btn secondary" to={`${base}/politica-proteccion-datos`}>
+                Política de protección de datos
+              </Link>
+            )}
           </div>
+          {!publico && (
+            <div className="btn-row">
+              <button type="button" className="btn secondary" onClick={handleCopyLink}>
+                {linkCopied ? "¡Enlace copiado!" : "Formulario para enviar a usuarios"}
+              </button>
+            </div>
+          )}
         </div>
       </div>
     );
@@ -171,7 +194,7 @@ export default function FormPage() {
                     datos en la nube, con acceso restringido únicamente al
                     personal autorizado de Reacondicionamiento Físico y Salud
                     IJ. Más información en la{" "}
-                    <Link to="/formulario/politica-proteccion-datos">
+                    <Link to={`${base}/politica-proteccion-datos`}>
                       Política de protección de datos
                     </Link>
                     .
