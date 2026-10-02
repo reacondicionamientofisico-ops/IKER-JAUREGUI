@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import Header from "./components/Header";
 import ValoracionMenu from "./components/ValoracionMenu";
+import ValoracionTabs from "./components/ValoracionTabs";
 import FormPage from "./pages/FormPage";
 import TablePage from "./pages/TablePage";
 import ValoracionPage from "./pages/ValoracionPage";
@@ -33,9 +34,10 @@ function Layout() {
     <>
       <div className="sticky-top" ref={stickyRef}>
         <Header />
-        {enValoracion && !esTabla && (
-          <div className="container valoracion sticky-sub">
-            <ValoracionMenu />
+        {enValoracion && (
+          <div className={`container valoracion sticky-sub sub-row${esTabla ? " container-wide" : ""}`}>
+            {!esTabla && <ValoracionMenu />}
+            <ValoracionTabs />
           </div>
         )}
       </div>

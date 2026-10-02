@@ -141,10 +141,15 @@ export default function ClienteDetail({
           </div>
         );
 
-  const goTo = (key: string) => {
-    setTab(key);
-    document.getElementById(`sec-${key}`)?.scrollIntoView({ behavior: "smooth", block: "start" });
-  };
+  const enValoracion = tab === "valoracion";
+
+  // Se hace tras el render: al volver desde Valoración las secciones se montan de nuevo.
+  useEffect(() => {
+    if (enValoracion) return;
+    document.getElementById(`sec-${tab}`)?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, [tab, enValoracion]);
+
+  const goTo = (key: string) => setTab(key);
 
   return (
     <div className="modal-backdrop" onClick={onClose}>
@@ -202,7 +207,7 @@ export default function ClienteDetail({
           )}
         </div>
 
-        {SECTIONS.map((section, idx) => (
+        {!enValoracion && SECTIONS.map((section, idx) => (
           <div className="detail-block" id={`sec-${section.key}`} key={section.key}>
             <h3 className="detail-section-title">{section.title}</h3>
             {idx === 0 && contactoBlock}
@@ -255,6 +260,7 @@ export default function ClienteDetail({
           </div>
         ))}
 
+        {enValoracion && (
         <div className="detail-block" id="sec-valoracion">
           <div className="detail-section">
             <h3 className="detail-section-title">Valoración</h3>
@@ -273,7 +279,7 @@ export default function ClienteDetail({
             )}
           </div>
         </div>
-
+        )}
 
         <div className="btn-row">
           <button

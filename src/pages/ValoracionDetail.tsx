@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import type { Valoracion } from "../data/valoracionesStore";
 import {
   EQUILIBRIO_DIRECCIONES,
@@ -41,7 +41,9 @@ type TabKey = (typeof TABS)[number]["key"];
 export function ValoracionContent({ item, onEdit }: { item: Valoracion; onEdit: () => void }) {
   const { datos, values: s } = item;
   const edad = calcularEdad(datos.fechaNac);
-  const [tab, setTab] = useState<TabKey>("datos");
+  const uid = item.id;
+  const go = (key: TabKey) =>
+    document.getElementById(`val-${uid}-${key}`)?.scrollIntoView({ behavior: "smooth", block: "start" });
 
   const totals: [string, number | null, number][] = [
     ["Puntuación total derecha", fmsSideTotal(s, 0), FMS_SIDE_RISK],
@@ -66,31 +68,26 @@ export function ValoracionContent({ item, onEdit }: { item: Valoracion; onEdit: 
           ✎
         </button>
       </div>
-      <div className="inner-tabs" role="tablist">
+      <nav className="inner-tabs inner-tabs-sticky" aria-label="Apartados de la valoración">
         {TABS.map((t) => (
-          <button
-            key={t.key}
-            type="button"
-            role="tab"
-            aria-selected={tab === t.key}
-            className={`inner-tab${tab === t.key ? " active" : ""}`}
-            onClick={() => setTab(t.key)}
-          >
+          <button key={t.key} type="button" className="inner-tab" onClick={() => go(t.key)}>
             {t.label}
           </button>
         ))}
-      </div>
-      {tab === "datos" && (
-        <div className="inner-panel" role="tabpanel">
+      </nav>
+      <section id={`val-${uid}-datos`} className="inner-panel val-section">
+        <h3 className="val-section-title">Datos</h3>
+        <div>
             <Row label="Deporte" value={datos.deporte} />
             <Row label="Sexo" value={datos.sexo} />
             <Row label="Fecha de nacimiento" value={datos.fechaNac} />
             <Row label="Edad" value={edad} />
             <Row label="Fecha de la toma" value={datos.fechaToma} />
         </div>
-      )}
-      {tab === "fms" && (
-        <div className="inner-panel" role="tabpanel">
+      </section>
+      <section id={`val-${uid}-fms`} className="inner-panel val-section">
+        <h3 className="val-section-title">1. FMS</h3>
+        <div>
             <div className="table-scroll">
               <table className="valoracion-glossary valoracion-data">
                 <thead>
@@ -122,9 +119,10 @@ export function ValoracionContent({ item, onEdit }: { item: Valoracion; onEdit: 
               </p>
             ))}
         </div>
-      )}
-      {tab === "rom" && (
-        <div className="inner-panel" role="tabpanel">
+      </section>
+      <section id={`val-${uid}-rom`} className="inner-panel val-section">
+        <h3 className="val-section-title">2. Goniometría</h3>
+        <div>
             {romFilled.length === 0 ? (
               <p className="help">Sin mediciones.</p>
             ) : (
@@ -157,9 +155,10 @@ export function ValoracionContent({ item, onEdit }: { item: Valoracion; onEdit: 
               </div>
             )}
         </div>
-      )}
-      {tab === "eq" && (
-        <div className="inner-panel" role="tabpanel">
+      </section>
+      <section id={`val-${uid}-eq`} className="inner-panel val-section">
+        <h3 className="val-section-title">3. Equilibrio</h3>
+        <div>
             <div className="table-scroll">
               <table className="valoracion-glossary valoracion-data">
                 <thead>
@@ -181,14 +180,16 @@ export function ValoracionContent({ item, onEdit }: { item: Valoracion; onEdit: 
               </table>
             </div>
         </div>
-      )}
-      {tab === "sit" && (
-        <div className="inner-panel" role="tabpanel">
+      </section>
+      <section id={`val-${uid}-sit`} className="inner-panel val-section">
+        <h3 className="val-section-title">4. Sit and stand</h3>
+        <div>
             <Row label="Evaluación" value={s["sitstand"]} />
         </div>
-      )}
-      {tab === "zona" && (
-        <div className="inner-panel" role="tabpanel">
+      </section>
+      <section id={`val-${uid}-zona`} className="inner-panel val-section">
+        <h3 className="val-section-title">5. Zona media</h3>
+        <div>
             <Row label="Plancha (segundos)" value={s["zonaMedia.plancha"]} />
             <Row label="Nivel de plancha" value={nivel} />
             <p style={{ margin: "4px 0" }} className={limite !== null && per >= limite ? "error-text" : undefined}>
@@ -197,7 +198,7 @@ export function ValoracionContent({ item, onEdit }: { item: Valoracion; onEdit: 
               {limite !== null && per >= limite ? " (por encima de la referencia)" : ""}
             </p>
         </div>
-      )}
+      </section>
     </div>
   );
 }

@@ -11,6 +11,7 @@ import logo from "../assets/logo.jpeg";
 export default function FormPage({ publico = false }: { publico?: boolean }) {
   const base = publico ? "/cuestionario" : "/formulario";
   const [started, setStarted] = useState(false);
+  const [activeSection, setActiveSection] = useState<string>(SECTIONS[0].key);
   const [values, setValues] = useState<Record<string, ClienteValue>>({});
   const [otherTexts, setOtherTexts] = useState<Record<string, string>>({});
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -32,6 +33,28 @@ export default function FormPage({ publico = false }: { publico?: boolean }) {
     setValue("edad", calcularEdad(values.fechaNacimiento as string | undefined));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [values.fechaNacimiento]);
+
+  // Resalta en el menú la sección que se está viendo.
+  useEffect(() => {
+    if (!started) return;
+    const onScroll = () => {
+      const offset =
+        (parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--sticky-h")) || 0) + 80;
+      let current = SECTIONS[0].key;
+      for (const { key } of SECTIONS) {
+        const el = document.getElementById(`form-sec-${key}`);
+        if (el && el.getBoundingClientRect().top <= offset) current = key;
+      }
+      setActiveSection(current);
+    };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [started]);
+
+  const goToSection = (key: string) => {
+    document.getElementById(`form-sec-${key}`)?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
 
   const validate = (): boolean => {
     const newErrors: Record<string, string> = {};
@@ -137,6 +160,19 @@ export default function FormPage({ publico = false }: { publico?: boolean }) {
           Volver a inicio
         </button>
       </div>
+      <nav className="valoracion-menu form-menu" aria-label="Secciones del cuestionario">
+        {SECTIONS.map((section) => (
+          <button
+            key={section.key}
+            type="button"
+            className={activeSection === section.key ? "active" : ""}
+            aria-current={activeSection === section.key ? "true" : undefined}
+            onClick={() => goToSection(section.key)}
+          >
+            {section.title}
+          </button>
+        ))}
+      </nav>
       <form onSubmit={handleSubmit}>
         <input
           type="text"
@@ -147,7 +183,7 @@ export default function FormPage({ publico = false }: { publico?: boolean }) {
           onChange={(e) => setHoneypot(e.target.value)}
         />
         {SECTIONS.map((section) => (
-          <div className="card" key={section.key}>
+          <div className="card form-section" id={`form-sec-${section.key}`} key={section.key}>
             <h2 className="section-title">{section.title}</h2>
             {section.fields.map((field) => (
               <div key={field.key}>

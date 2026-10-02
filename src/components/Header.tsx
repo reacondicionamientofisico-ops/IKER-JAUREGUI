@@ -1,5 +1,4 @@
 import { NavLink, useLocation } from "react-router-dom";
-import ValoracionTabs from "./ValoracionTabs";
 import logo from "../assets/logo.jpeg";
 import { useAuth } from "../lib/auth";
 
@@ -36,7 +35,6 @@ export default function Header() {
           </NavLink>
         </nav>
       )}
-      {session && location.pathname.startsWith("/valoracion") && <ValoracionTabs />}
       {session && !location.pathname.startsWith("/cuestionario") && (
         <button type="button" className="btn btn-outline" onClick={() => void signOut()}>
           Salir

@@ -1012,6 +1012,17 @@ html {
   scroll-behavior: smooth;
 }
 
+/* Menú de secciones del cuestionario (formulario interno y enlace público) */
+.form-menu {
+  position: sticky;
+  top: var(--sticky-h, 0px);
+  z-index: 40;
+  margin-bottom: 16px;
+}
+.form-section {
+  scroll-margin-top: calc(var(--sticky-h, 0px) + 64px);
+}
+
 /* Campos que vienen de la ficha del usuario: solo lectura */
 .valoracion .field input:disabled { background: #EEE7DD; color: #384730; cursor: not-allowed; opacity: 1; -webkit-text-fill-color: #384730; }
 
@@ -1033,6 +1044,10 @@ html {
 .sticky-top .sticky-sub .nav { margin: 6px 0 !important; }
 .sticky-top .valoracion-menu { margin-bottom: 0; border-bottom: none; }
 
+.sticky-top .sub-row { display: flex; align-items: center; gap: 12px; }
+.sticky-top .sub-row .valoracion-menu { flex: 1 1 auto; min-width: 0; }
+.sticky-top .sub-row .nav-sub { flex: 0 0 auto; margin-left: auto; }
+@media (max-width: 680px) { .sticky-top .sub-row { flex-wrap: wrap; } }
 .header-right { margin-left: auto; display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 8px 18px; }
 .header-right .nav { margin-left: 0; }
 .header-right .header-section { margin-left: 0; }
@@ -1050,3 +1065,11 @@ html {
   .sticky-top .header .titles h1 { font-size: 1rem; }
   .sticky-top .header .titles p { display: none; }
 }
+
+/* Valoración: todo el contenido en una sola vista; los botones son accesos directos */
+.inner-tabs-sticky { position: sticky; top: var(--sticky-h, 0px); z-index: 5; background: var(--color-blanco); padding-top: 6px; margin-top: 8px; }
+.val-section { scroll-margin-top: calc(var(--sticky-h, 0px) + 64px); padding: 8px 0 16px; border-bottom: 1px solid var(--color-borde); }
+.val-section:last-child { border-bottom: none; }
+.val-section-title { font-size: 1.05rem; color: var(--color-verde); margin: 8px 0 10px; }
+.modal .inner-tabs-sticky { top: 0; }
+.modal .val-section { scroll-margin-top: 64px; }
