@@ -25,3 +25,9 @@ dist-ssr
 *.sw?
 
 .vercel
+
+# Local Netlify folder
+.netlify
+
+# Build local de valoración
+dist-valoracion
