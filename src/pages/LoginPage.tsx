@@ -1,19 +1,17 @@
 import { useState } from "react";
-import { Navigate, useLocation } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import { useAuth } from "../lib/auth";
 import logo from "../assets/logo.jpeg";
 
 export default function LoginPage() {
   const { session, signIn } = useAuth();
-  const location = useLocation();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
   if (session) {
-    const from = (location.state as { from?: string } | null)?.from ?? "/clientes";
-    return <Navigate to={from} replace />;
+    return <Navigate to="/clientes" replace />;
   }
 
   const handleSubmit = async (e: React.FormEvent) => {

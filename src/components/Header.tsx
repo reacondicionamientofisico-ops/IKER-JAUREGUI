@@ -1,6 +1,7 @@
 import { NavLink, useLocation } from "react-router-dom";
 import ValoracionTabs from "./ValoracionTabs";
 import logo from "../assets/logo.jpeg";
+import { useAuth } from "../lib/auth";
 
 // VITE_ONLY_VALORACION=true → build público solo con Valoración (sin apartado de alumnos)
 const ONLY_VALORACION = import.meta.env.VITE_ONLY_VALORACION === "true";
@@ -10,7 +11,9 @@ export default function Header() {
   const isWide =
     location.pathname.startsWith("/valoracion/tabla") || location.pathname.startsWith("/clientes");
 
-  const isPublic = location.pathname.startsWith("/cuestionario");
+  const { session, signOut } = useAuth();
+  // Sin navegación en las páginas públicas (cuestionario) ni antes de iniciar sesión
+  const isPublic = location.pathname.startsWith("/cuestionario") || !session;
   const isMedium = !isWide && location.pathname.startsWith("/valoracion");
 
   return (
@@ -33,7 +36,12 @@ export default function Header() {
           </NavLink>
         </nav>
       )}
-      {location.pathname.startsWith("/valoracion") && <ValoracionTabs />}
+      {session && location.pathname.startsWith("/valoracion") && <ValoracionTabs />}
+      {session && !location.pathname.startsWith("/cuestionario") && (
+        <button type="button" className="btn btn-outline" onClick={() => void signOut()}>
+          Salir
+        </button>
+      )}
       </div>
     </header>
   );

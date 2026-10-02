@@ -7,11 +7,15 @@ import TablePage from "./pages/TablePage";
 import ValoracionPage from "./pages/ValoracionPage";
 import ValoracionTablePage from "./pages/ValoracionTablePage";
 import PrivacyPolicyPage from "./pages/PrivacyPolicyPage";
+import LoginPage from "./pages/LoginPage";
+import RequireAuth from "./components/RequireAuth";
+import { AuthProvider, useAuth } from "./lib/auth";
 
 function Layout() {
   const { pathname } = useLocation();
   const stickyRef = useRef<HTMLDivElement>(null);
-  const enValoracion = pathname.startsWith("/valoracion");
+  const { session } = useAuth();
+  const enValoracion = pathname.startsWith("/valoracion") && !!session;
   const esTabla = pathname.startsWith("/valoracion/tabla");
 
   // Publica la altura de la cabecera fija para que el scroll a secciones no quede tapado.
@@ -36,22 +40,29 @@ function Layout() {
         )}
       </div>
       <Routes>
-        <Route path="/" element={<Navigate to="/valoracion" replace />} />
-        <Route path="/formulario" element={<FormPage />} />
-        <Route
-          path="/formulario/politica-proteccion-datos"
-          element={<PrivacyPolicyPage />}
-        />
+        {/* Rutas públicas: login y enlace del cuestionario que se envía a los usuarios */}
+        <Route path="/login" element={<LoginPage />} />
         <Route path="/cuestionario" element={<FormPage publico />} />
         <Route
           path="/cuestionario/politica-proteccion-datos"
           element={<PrivacyPolicyPage />}
         />
-        <Route path="/valoracion" element={<ValoracionPage key="nuevo" />} />
-        <Route path="/valoracion/tabla" element={<ValoracionTablePage />} />
-        <Route path="/valoracion/editar/:id" element={<ValoracionPage key="editar" />} />
-        <Route path="/clientes" element={<TablePage />} />
-        <Route path="*" element={<Navigate to="/formulario" replace />} />
+
+        {/* Rutas internas: requieren sesión */}
+        <Route path="/" element={<Navigate to="/clientes" replace />} />
+        <Route path="/formulario" element={<RequireAuth><FormPage /></RequireAuth>} />
+        <Route
+          path="/formulario/politica-proteccion-datos"
+          element={<RequireAuth><PrivacyPolicyPage /></RequireAuth>}
+        />
+        <Route path="/valoracion" element={<RequireAuth><ValoracionPage key="nuevo" /></RequireAuth>} />
+        <Route path="/valoracion/tabla" element={<RequireAuth><ValoracionTablePage /></RequireAuth>} />
+        <Route
+          path="/valoracion/editar/:id"
+          element={<RequireAuth><ValoracionPage key="editar" /></RequireAuth>}
+        />
+        <Route path="/clientes" element={<RequireAuth><TablePage /></RequireAuth>} />
+        <Route path="*" element={<Navigate to="/clientes" replace />} />
       </Routes>
     </>
   );
@@ -60,7 +71,9 @@ function Layout() {
 export default function App() {
   return (
     <BrowserRouter>
-      <Layout />
+      <AuthProvider>
+        <Layout />
+      </AuthProvider>
     </BrowserRouter>
   );
 }

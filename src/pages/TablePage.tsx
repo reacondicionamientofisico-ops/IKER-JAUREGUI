@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import CopyFormLinkButton from "../components/CopyFormLinkButton";
 import { clientesApi } from "../data/clientesApi";
 import ClienteDetail from "./ClienteDetail";
 import ClienteFormModal from "./ClienteFormModal";
@@ -83,6 +84,7 @@ export default function TablePage() {
         <Link className="btn secondary" to="/formulario">
           Formulario Inscripción
         </Link>
+        <CopyFormLinkButton />
       </div>
 
       {loading && <p className="help">Cargando usuarios...</p>}

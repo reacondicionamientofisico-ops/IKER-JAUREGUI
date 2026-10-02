@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { SECTIONS } from "../data/fields";
 import { clientesApi } from "../data/clientesApi";
-import FormField, { OTHER_VALUE } from "../components/FormField";
+import CopyFormLinkButton from "../components/CopyFormLinkButton";
+import FormField,{ OTHER_VALUE } from "../components/FormField";
 import type { ClienteValue } from "../types";
 import { calcularEdad } from "../lib/age";
 import logo from "../assets/logo.jpeg";
@@ -18,19 +19,6 @@ export default function FormPage({ publico = false }: { publico?: boolean }) {
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
-
-  const [linkCopied, setLinkCopied] = useState(false);
-
-  const handleCopyLink = async () => {
-    const url = `${window.location.origin}/cuestionario`;
-    try {
-      await navigator.clipboard.writeText(url);
-      setLinkCopied(true);
-      setTimeout(() => setLinkCopied(false), 2500);
-    } catch {
-      window.prompt("Copia este enlace y envíalo al usuario:", url);
-    }
-  };
 
   const setValue = (key: string, value: ClienteValue) => {
     setValues((prev) => ({ ...prev, [key]: value }));
@@ -134,9 +122,7 @@ export default function FormPage({ publico = false }: { publico?: boolean }) {
           </div>
           {!publico && (
             <div className="btn-row">
-              <button type="button" className="btn secondary" onClick={handleCopyLink}>
-                {linkCopied ? "¡Enlace copiado!" : "Formulario para enviar a usuarios"}
-              </button>
+              <CopyFormLinkButton />
             </div>
           )}
         </div>
