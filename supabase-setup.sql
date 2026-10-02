@@ -121,3 +121,28 @@ create policy "autenticados pueden actualizar valoraciones"
 
 create policy "autenticados pueden borrar valoraciones"
   on public.valoraciones for delete to authenticated using (true);
+
+-- 5) Contratos de entrenamiento personal firmados -------------------------
+-- Contienen datos personales, de salud (PAR-Q) y la firma manuscrita.
+-- El rol anon (formulario público) solo puede INSERTAR; no puede leer,
+-- modificar ni borrar. La lectura queda restringida a usuarios con sesión.
+create table if not exists public.contratos (
+  id uuid primary key default gen_random_uuid(),
+  created_at timestamptz not null default now(),
+  datos jsonb not null,
+  firma text not null,
+  constraint contratos_firma_png check (firma like 'data:image/png;base64,%'),
+  constraint contratos_firma_tam check (length(firma) <= 400000),
+  constraint contratos_datos_tam check (pg_column_size(datos) <= 20000)
+);
+
+alter table public.contratos enable row level security;
+
+create policy "anon puede insertar contratos"
+  on public.contratos for insert to anon with check (true);
+
+create policy "autenticados pueden leer contratos"
+  on public.contratos for select to authenticated using (true);
+
+create policy "autenticados pueden borrar contratos"
+  on public.contratos for delete to authenticated using (true);

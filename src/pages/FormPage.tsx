@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { SECTIONS } from "../data/fields";
 import { clientesApi } from "../data/clientesApi";
@@ -6,16 +6,38 @@ import CopyFormLinkButton from "../components/CopyFormLinkButton";
 import FormField,{ OTHER_VALUE } from "../components/FormField";
 import type { ClienteValue } from "../types";
 import { calcularEdad } from "../lib/age";
+import ContratoPage from "./ContratoPage";
 import logo from "../assets/logo.jpeg";
+
+const CONTACTO_ID = "form-sub-contacto";
+const CONTACTO_KEY = "contacto";
+
+// Menú del cuestionario: las secciones, con un acceso directo a "Contacto" tras la ficha.
+const MENU_ITEMS = SECTIONS.flatMap((s) =>
+  s.key === SECTIONS[0].key ? [s, { key: CONTACTO_KEY, title: "Contacto" }] : [s]
+);
+const menuTargetId = (key: string) => (key === CONTACTO_KEY ? CONTACTO_ID : `form-sec-${key}`);
 
 export default function FormPage({ publico = false }: { publico?: boolean }) {
   const base = publico ? "/cuestionario" : "/formulario";
-  const [started, setStarted] = useState(false);
+  const draftKey = `form-draft:${base}`;
+  // Borrador en sessionStorage: se conserva al ir al contrato o a la política en la misma pestaña.
+  const [draft] = useState(() => {
+    try {
+      const raw = sessionStorage.getItem(draftKey);
+      return raw ? JSON.parse(raw) : null;
+    } catch {
+      return null;
+    }
+  });
+  const [started, setStarted] = useState<boolean>(draft?.started ?? false);
   const [activeSection, setActiveSection] = useState<string>(SECTIONS[0].key);
-  const [values, setValues] = useState<Record<string, ClienteValue>>({});
-  const [otherTexts, setOtherTexts] = useState<Record<string, string>>({});
+  const [values, setValues] = useState<Record<string, ClienteValue>>(draft?.values ?? {});
+  const [otherTexts, setOtherTexts] = useState<Record<string, string>>(draft?.otherTexts ?? {});
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [consent, setConsent] = useState(false);
+  const [consent, setConsent] = useState<boolean>(draft?.consent ?? false);
+  const [contratoFirmado, setContratoFirmado] = useState<boolean>(draft?.contratoFirmado ?? false);
+  const [contratoOpen, setContratoOpen] = useState(false);
   const [honeypot, setHoneypot] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -30,19 +52,55 @@ export default function FormPage({ publico = false }: { publico?: boolean }) {
   };
 
   useEffect(() => {
+    try {
+      if (submitted) sessionStorage.removeItem(draftKey);
+      else sessionStorage.setItem(draftKey, JSON.stringify({ started, values, otherTexts, consent, contratoFirmado }));
+    } catch {
+      /* sin almacenamiento disponible: el borrador simplemente no se conserva */
+    }
+  }, [draftKey, started, values, otherTexts, consent, contratoFirmado, submitted]);
+
+  // Bloquea el scroll de la página mientras el contrato está abierto.
+  useEffect(() => {
+    if (!contratoOpen) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [contratoOpen]);
+
+  useEffect(() => {
     setValue("edad", calcularEdad(values.fechaNacimiento as string | undefined));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [values.fechaNacimiento]);
+
+  // Publica la altura de la barra fija (botones + menú) para el scroll a secciones.
+  const barRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const el = barRef.current;
+    if (!started || !el) return;
+    const update = () => document.documentElement.style.setProperty("--form-bar-h", `${el.offsetHeight}px`);
+    update();
+    const ro = new ResizeObserver(update);
+    ro.observe(el);
+    return () => {
+      ro.disconnect();
+      document.documentElement.style.removeProperty("--form-bar-h");
+    };
+  }, [started]);
 
   // Resalta en el menú la sección que se está viendo.
   useEffect(() => {
     if (!started) return;
     const onScroll = () => {
       const offset =
-        (parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--sticky-h")) || 0) + 80;
-      let current = SECTIONS[0].key;
-      for (const { key } of SECTIONS) {
-        const el = document.getElementById(`form-sec-${key}`);
+        (parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--sticky-h")) || 0) +
+        (parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--form-bar-h")) || 0) +
+        24;
+      let current = MENU_ITEMS[0].key;
+      for (const { key } of MENU_ITEMS) {
+        const el = document.getElementById(menuTargetId(key));
         if (el && el.getBoundingClientRect().top <= offset) current = key;
       }
       setActiveSection(current);
@@ -53,7 +111,7 @@ export default function FormPage({ publico = false }: { publico?: boolean }) {
   }, [started]);
 
   const goToSection = (key: string) => {
-    document.getElementById(`form-sec-${key}`)?.scrollIntoView({ behavior: "smooth", block: "start" });
+    document.getElementById(menuTargetId(key))?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
   const validate = (): boolean => {
@@ -71,6 +129,7 @@ export default function FormPage({ publico = false }: { publico?: boolean }) {
       }
     }
     if (!consent) newErrors["__consent"] = "Debes aceptar el consentimiento para continuar.";
+    if (!contratoFirmado) newErrors["__contrato"] = "Debes rellenar y firmar el contrato de entrenamiento personal.";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -155,24 +214,32 @@ export default function FormPage({ publico = false }: { publico?: boolean }) {
 
   return (
     <div className="container">
-      <div className="btn-row" style={{ justifyContent: "flex-start", marginTop: 0, marginBottom: 16 }}>
+      <div className="form-bar" ref={barRef}>
+      <div className="btn-row" style={{ justifyContent: "flex-start", flexWrap: "wrap", marginTop: 0, marginBottom: 0 }}>
         <button type="button" className="btn secondary" onClick={() => setStarted(false)}>
           Volver a inicio
         </button>
+        <button type="button" className="btn doc" onClick={() => setContratoOpen(true)}>
+          Contrato entrenamiento personal
+        </button>
+        <Link className="btn doc" to={`${base}/politica-proteccion-datos`}>
+          Política de protección de datos
+        </Link>
       </div>
       <nav className="valoracion-menu form-menu" aria-label="Secciones del cuestionario">
-        {SECTIONS.map((section) => (
+        {MENU_ITEMS.map((item) => (
           <button
-            key={section.key}
+            key={item.key}
             type="button"
-            className={activeSection === section.key ? "active" : ""}
-            aria-current={activeSection === section.key ? "true" : undefined}
-            onClick={() => goToSection(section.key)}
+            className={activeSection === item.key ? "active" : ""}
+            aria-current={activeSection === item.key ? "true" : undefined}
+            onClick={() => goToSection(item.key)}
           >
-            {section.title}
+            {item.title}
           </button>
         ))}
       </nav>
+      </div>
       <form onSubmit={handleSubmit}>
         <input
           type="text"
@@ -188,7 +255,12 @@ export default function FormPage({ publico = false }: { publico?: boolean }) {
             {section.fields.map((field) => (
               <div key={field.key}>
                 {field.groupStart && (
-                  <h3 className="subsection-title">{field.groupStart}</h3>
+                  <h3
+                    className="subsection-title"
+                    id={field.groupStart === "Contacto" ? CONTACTO_ID : undefined}
+                  >
+                    {field.groupStart}
+                  </h3>
                 )}
                 <FormField
                   field={field}
@@ -227,6 +299,21 @@ export default function FormPage({ publico = false }: { publico?: boolean }) {
                     {errors["__consent"]}
                   </p>
                 )}
+                <div className="btn-row">
+                  <button type="button" className="btn doc" onClick={() => setContratoOpen(true)}>
+                    Contrato entrenamiento personal
+                  </button>
+                </div>
+                <p className="help" style={{ textAlign: "center" }}>
+                  {contratoFirmado
+                    ? "✓ Contrato firmado correctamente."
+                    : "Obligatorio: rellena todos los campos del contrato y fírmalo."}
+                </p>
+                {errors["__contrato"] && (
+                  <p className="error-text" style={{ textAlign: "center" }}>
+                    {errors["__contrato"]}
+                  </p>
+                )}
               </>
             )}
           </div>
@@ -244,6 +331,30 @@ export default function FormPage({ publico = false }: { publico?: boolean }) {
           </button>
         </div>
       </form>
+      {contratoOpen && (
+        <div className="modal-backdrop" role="dialog" aria-modal="true" aria-label="Contrato de entrenamiento personal">
+          <div className="modal">
+            <ContratoPage
+              embedded
+              initial={{
+                nombre: [values.nombre, values.primerApellido, values.segundoApellido]
+                  .filter((x) => typeof x === "string" && x.trim())
+                  .join(" "),
+                email: typeof values.email === "string" ? values.email : "",
+              }}
+              onClose={() => setContratoOpen(false)}
+              onSigned={() => {
+                setContratoFirmado(true);
+                setContratoOpen(false);
+                setErrors((prev) => {
+                  const { __contrato: _omit, ...rest } = prev;
+                  return rest;
+                });
+              }}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

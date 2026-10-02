@@ -9,7 +9,7 @@ const range = (min: number, max: number): number[] =>
 export const SECTIONS: SectionDef[] = [
   {
     key: "ficha",
-    title: "Ficha usuario",
+    title: "General",
     fields: [
       {
         key: "nombre",
@@ -351,7 +351,7 @@ export const SECTIONS: SectionDef[] = [
   },
   {
     key: "cierre",
-    title: "Cierre",
+    title: "Aceptación condiciones",
     fields: [
       {
         key: "observaciones",

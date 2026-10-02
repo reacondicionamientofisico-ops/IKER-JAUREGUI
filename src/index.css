@@ -655,12 +655,15 @@ tbody tr:hover {
   display: flex;
   align-items: flex-start;
   justify-content: center;
-  padding: 40px 16px;
+  /* Sin padding superior: un sticky dentro del modal se ancla al borde real del
+     scroll y no deja un hueco por el que se vea el contenido pasando por encima. */
+  padding: 0 16px 40px;
   overflow-y: auto;
   z-index: 50;
 }
 
 .modal {
+  margin-top: 40px;
   background: var(--color-blanco);
   border-radius: var(--radius);
   max-width: 1100px;
@@ -727,7 +730,7 @@ tbody tr:hover {
 
 .detail-block { scroll-margin-top: 72px; }
 .detail-block + .detail-block { margin-top: 36px; }
-.sticky-tabs { position: sticky; top: 0; z-index: 5; background: var(--color-blanco); margin-top: 8px; }
+.sticky-tabs { position: sticky; top: 0; z-index: 5; background: var(--color-blanco); margin-top: 8px; padding-top: 8px; }
 
 .detail-grid {
   display: flex;
@@ -1042,8 +1045,22 @@ html {
   margin-bottom: 16px;
 }
 .form-section {
-  scroll-margin-top: calc(var(--sticky-h, 0px) + 64px);
+  scroll-margin-top: calc(var(--sticky-h, 0px) + var(--form-bar-h, 0px) + 16px);
 }
+/* Botones + menú de secciones: fijos bajo la cabecera */
+.form-bar {
+  position: sticky;
+  top: var(--sticky-h, 0px);
+  z-index: 40;
+  background: var(--color-crema);
+  padding-top: 20px;
+  margin-bottom: 16px;
+}
+/* Documentos legales (contrato y política): color propio, distinto al resto de botones */
+.btn.doc { background: var(--color-acento); border-color: var(--color-acento); color: #fff; }
+.btn.doc:hover { background: #7a5c2e; border-color: #7a5c2e; color: #fff; }
+#form-sub-contacto { scroll-margin-top: calc(var(--sticky-h, 0px) + var(--form-bar-h, 0px) + 16px); }
+.form-bar .form-menu { position: static; margin-bottom: 0; }
 
 /* Campos que vienen de la ficha del usuario: solo lectura */
 .valoracion .field input:disabled { background: #EEE7DD; color: #384730; cursor: not-allowed; opacity: 1; -webkit-text-fill-color: #384730; }
@@ -1095,3 +1112,26 @@ html {
 .val-section-title { font-size: 1.05rem; color: var(--color-verde); margin: 8px 0 10px; }
 .modal .inner-tabs-sticky { top: 0; }
 .modal .val-section { scroll-margin-top: 64px; }
+
+/* Contrato de entrenamiento personal */
+.contrato { line-height: 1.55; }
+.contrato-title { font-size: 1.5rem; text-align: center; margin-bottom: 4px; }
+.contrato-sub { text-align: center; color: var(--color-acento); letter-spacing: 0.08em; text-transform: uppercase; font-size: 0.85rem; }
+.contrato h3 { margin: 28px 0 8px; color: var(--color-verde); border-bottom: 2px solid var(--color-verde-claro); padding-bottom: 4px; }
+.contrato h4 { margin: 20px 0 6px; color: var(--color-verde); }
+.contrato ul { padding-left: 22px; }
+.contrato hr { border: 0; border-top: 1px solid var(--color-borde); margin: 32px 0 8px; }
+.contrato .callout { background: var(--color-crema); border-left: 4px solid var(--color-acento); padding: 10px 14px; border-radius: 6px; }
+.contrato-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 8px 0 12px; }
+.contrato-grid label { display: flex; flex-direction: column; gap: 4px; font-weight: 600; font-size: 0.9rem; }
+.inline-input { font: inherit; padding: 6px 10px; border: 1px solid var(--color-borde); border-radius: 8px; background: var(--color-blanco); color: var(--color-texto); max-width: 100%; }
+.contrato-grid .inline-input { width: 100%; box-sizing: border-box; font-weight: 400; }
+.inline-input:focus { outline: none; border-color: var(--color-verde); }
+.inline-input.invalid, .group-invalid { border-color: var(--color-error); }
+.group-invalid { outline: 2px solid var(--color-error); outline-offset: 4px; border-radius: 6px; }
+.radio-row { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 10px 0; border-bottom: 1px solid var(--color-borde); }
+.radio-set { display: flex; gap: 16px; flex: 0 0 auto; }
+.radio-opt { display: inline-flex; align-items: center; gap: 6px; cursor: pointer; font-weight: 600; }
+.signature-pad canvas { width: 100%; max-width: 600px; aspect-ratio: 3 / 1; border: 2px dashed var(--color-verde-claro); border-radius: 8px; background: #fff; touch-action: none; cursor: crosshair; display: block; }
+.signature-pad .btn { margin-top: 8px; }
+@media (max-width: 680px) { .radio-row { flex-direction: column; align-items: flex-start; } }

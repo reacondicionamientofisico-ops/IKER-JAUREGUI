@@ -8,6 +8,7 @@ import TablePage from "./pages/TablePage";
 import ValoracionPage from "./pages/ValoracionPage";
 import ValoracionTablePage from "./pages/ValoracionTablePage";
 import PrivacyPolicyPage from "./pages/PrivacyPolicyPage";
+import ContratoPage from "./pages/ContratoPage";
 import LoginPage from "./pages/LoginPage";
 import RequireAuth from "./components/RequireAuth";
 import { AuthProvider, useAuth } from "./lib/auth";
@@ -50,6 +51,8 @@ function Layout() {
           element={<PrivacyPolicyPage />}
         />
 
+        <Route path="/cuestionario/contrato" element={<ContratoPage />} />
+
         {/* Rutas internas: requieren sesión */}
         <Route path="/" element={<Navigate to="/clientes" replace />} />
         <Route path="/formulario" element={<RequireAuth><FormPage /></RequireAuth>} />
@@ -57,6 +60,7 @@ function Layout() {
           path="/formulario/politica-proteccion-datos"
           element={<RequireAuth><PrivacyPolicyPage /></RequireAuth>}
         />
+        <Route path="/formulario/contrato" element={<RequireAuth><ContratoPage /></RequireAuth>} />
         <Route path="/valoracion" element={<RequireAuth><ValoracionPage key="nuevo" /></RequireAuth>} />
         <Route path="/valoracion/tabla" element={<RequireAuth><ValoracionTablePage /></RequireAuth>} />
         <Route
