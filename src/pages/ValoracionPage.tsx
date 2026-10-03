@@ -155,8 +155,13 @@ function ValoracionForm({ existing }: { existing?: Valoracion }) {
       if (existing) await valoracionesStore.update(existing.id, limpio, s);
       else await valoracionesStore.add(limpio, s);
       navigate("/valoracion/tabla");
-    } catch {
-      setError("No se ha podido guardar la valoración. Revisa la conexión y que hayas iniciado sesión.");
+    } catch (e) {
+      const detalle = (e as { message?: string })?.message;
+      if (import.meta.env.DEV) console.error("Error al guardar valoración:", e);
+      setError(
+        "No se ha podido guardar la valoración. Revisa la conexión y que hayas iniciado sesión." +
+          (import.meta.env.DEV && detalle ? ` (${detalle})` : "")
+      );
       setSaving(false);
     }
   };

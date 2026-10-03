@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import Header from "./components/Header";
+import MainToolbar from "./components/MainToolbar";
 import ValoracionMenu from "./components/ValoracionMenu";
 import ValoracionTabs from "./components/ValoracionTabs";
 import FormPage from "./pages/FormPage";
@@ -35,6 +36,11 @@ function Layout() {
     <>
       <div className="sticky-top" ref={stickyRef}>
         <Header />
+        {enValoracion && (
+          <div className={`container valoracion valoracion-toolbar${esTabla ? " container-wide" : ""}`}>
+            <MainToolbar current="valoraciones" />
+          </div>
+        )}
         {enValoracion && (
           <div className={`container valoracion sticky-sub sub-row${esTabla ? " container-wide" : ""}`}>
             {!esTabla && <ValoracionMenu />}

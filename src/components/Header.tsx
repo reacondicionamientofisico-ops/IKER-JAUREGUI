@@ -14,6 +14,8 @@ export default function Header() {
   // Sin navegación en las páginas públicas (cuestionario) ni antes de iniciar sesión
   const isPublic = location.pathname.startsWith("/cuestionario") || !session;
   const isMedium = !isWide && location.pathname.startsWith("/valoracion");
+  // En Valoraciones los botones principales van en la barra bajo la cabecera (igual que en Usuarios)
+  const toolbarBelow = !ONLY_VALORACION && !!session && location.pathname.startsWith("/valoracion");
 
   return (
     <header className={`header${isWide ? " header-wide" : isMedium ? " header-medium" : ""}`}>
@@ -23,7 +25,7 @@ export default function Header() {
         <p>Centro de entrenamiento personal</p>
       </div>
       <div className="header-right">
-      {isPublic || location.pathname.startsWith("/clientes") ? null : ONLY_VALORACION ? (
+      {isPublic || toolbarBelow || location.pathname.startsWith("/clientes") ? null : ONLY_VALORACION ? (
         <span className="header-section">Valoraciones</span>
       ) : (
         <nav className="nav">
@@ -35,7 +37,7 @@ export default function Header() {
           </NavLink>
         </nav>
       )}
-      {session && !location.pathname.startsWith("/cuestionario") && !location.pathname.startsWith("/clientes") && (
+      {session && !toolbarBelow && !location.pathname.startsWith("/cuestionario") && !location.pathname.startsWith("/clientes") && (
         <button type="button" className="btn btn-outline" onClick={() => void signOut()}>
           Salir
         </button>

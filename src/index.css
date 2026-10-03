@@ -1169,3 +1169,8 @@ html {
 .signature-pad .btn { margin-top: 8px; }
 @media (max-width: 680px) { .radio-row { flex-direction: column; align-items: flex-start; } }
 .contrato .tarifas-img { display: block; max-width: 100%; width: 420px; margin: 12px auto; border-radius: 6px; }
+
+/* Barra principal compartida dentro de la cabecera fija de Valoraciones */
+/* Sin overrides: mismos márgenes, tamaño y forma que en la página de Usuarios. */
+.sticky-top .valoracion-toolbar { padding-bottom: 0; }
+.sticky-top .valoracion-toolbar .toolbar { margin-bottom: 12px; }
