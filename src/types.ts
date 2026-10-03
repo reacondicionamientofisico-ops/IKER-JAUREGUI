@@ -28,11 +28,20 @@ export interface FieldDef {
   placeholder?: string;
   groupStart?: string;
   computed?: boolean;
+  /** Se muestra solo si se cumplen todas las condiciones. */
+  showIf?: FieldCondition[];
+}
+
+export interface FieldCondition {
+  key: string;
+  equals?: string;
+  atLeast?: number;
 }
 
 export interface SectionDef {
   key: string;
   title: string;
+  note?: string;
   fields: FieldDef[];
 }
 

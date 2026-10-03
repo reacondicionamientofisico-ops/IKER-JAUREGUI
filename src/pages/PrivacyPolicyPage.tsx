@@ -1,14 +1,52 @@
+import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 
-export default function PrivacyPolicyPage() {
+export default function PrivacyPolicyPage({
+  embedded = false,
+  onClose,
+  consent: consentProp,
+  onConsentChange,
+}: {
+  embedded?: boolean;
+  onClose?: () => void;
+  consent?: boolean;
+  onConsentChange?: (checked: boolean) => void;
+} = {}) {
   const back = useLocation().pathname.startsWith("/cuestionario") ? "/cuestionario" : "/formulario";
+  // El consentimiento se comparte con el formulario a través de su borrador en sessionStorage.
+  const draftKey = `form-draft:${back}`;
+  const [consent, setConsent] = useState<boolean>(() => {
+    try {
+      const raw = sessionStorage.getItem(draftKey);
+      return raw ? Boolean(JSON.parse(raw)?.consent) : false;
+    } catch {
+      return false;
+    }
+  });
+
+  const updateConsent = (checked: boolean) => {
+    setConsent(checked);
+    try {
+      const raw = sessionStorage.getItem(draftKey);
+      const draft = raw ? JSON.parse(raw) : {};
+      sessionStorage.setItem(draftKey, JSON.stringify({ ...draft, consent: checked }));
+    } catch {
+      /* sin almacenamiento disponible: el consentimiento se marcará en el formulario */
+    }
+  };
   return (
-    <div className="container">
-      <div className="card policy">
+    <div className={embedded ? undefined : "container"}>
+      <div className={embedded ? "policy" : "card policy"}>
         <div className="btn-row policy-top-actions">
-          <Link className="btn secondary" to={back}>
-            Volver al formulario
-          </Link>
+          {embedded ? (
+            <button type="button" className="btn secondary" onClick={onClose}>
+              Cerrar
+            </button>
+          ) : (
+            <Link className="btn secondary" to={back}>
+              Volver al formulario
+            </Link>
+          )}
         </div>
         <h2 className="section-title">Política de protección de datos</h2>
         <p className="policy-intro">
@@ -255,10 +293,47 @@ export default function PrivacyPolicyPage() {
           iker.jau@gmail.com · 628 454 455
         </p>
 
+        {embedded ? (
+          <label className="consent">
+            <input
+              type="checkbox"
+              checked={consentProp ?? false}
+              onChange={(e) => onConsentChange?.(e.target.checked)}
+            />
+            <span>
+              Acepto que mis datos personales y de salud sean utilizados por
+              Reacondicionamiento Físico y Salud IJ únicamente para diseñar y
+              adaptar mi plan de entrenamiento y alimentación. Estos datos se
+              almacenan de forma segura en una base de datos en la nube, con
+              acceso restringido únicamente al personal autorizado de
+              Reacondicionamiento Físico y Salud IJ.
+            </span>
+          </label>
+        ) : (
+          <label className="consent">
+            <input
+              type="checkbox"
+              checked={consent}
+              onChange={(e) => updateConsent(e.target.checked)}
+            />
+            <span>
+              He leído la política de protección de datos y acepto que mis datos
+              personales y de salud sean tratados por Reacondicionamiento Físico
+              y Salud IJ en las condiciones aquí descritas.
+            </span>
+          </label>
+        )}
+
         <div className="btn-row">
-          <Link className="btn secondary" to={back}>
-            Volver al formulario
-          </Link>
+          {embedded ? (
+            <button type="button" className="btn secondary" onClick={onClose}>
+              Cerrar
+            </button>
+          ) : (
+            <Link className="btn secondary" to={back}>
+              Volver al formulario
+            </Link>
+          )}
         </div>
       </div>
     </div>

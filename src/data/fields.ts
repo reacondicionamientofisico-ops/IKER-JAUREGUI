@@ -1,4 +1,4 @@
-import type { SectionDef } from "../types";
+import type { ClienteValue, FieldDef, SectionDef } from "../types";
 
 const opts = (values: string[]): { value: string; label: string }[] =>
   values.map((v) => ({ value: v, label: v }));
@@ -27,23 +27,6 @@ export const SECTIONS: SectionDef[] = [
         type: "text",
       },
       {
-        key: "foto",
-        label: "Foto (opcional)",
-        type: "file",
-        help: "Sube una foto tuya desde tu ordenador (opcional).",
-      },
-      {
-        key: "telefono",
-        label: "Teléfono de contacto (con prefijo)",
-        type: "tel",
-        groupStart: "Contacto",
-      },
-      {
-        key: "email",
-        label: "Email de contacto",
-        type: "email",
-      },
-      {
         key: "sexo",
         label: "Sexo",
         type: "select",
@@ -64,12 +47,41 @@ export const SECTIONS: SectionDef[] = [
       {
         key: "localidad",
         label: "Localidad donde vives",
-        type: "text",
+        type: "select",
+        options: opts([
+          "Leioa",
+          "Getxo",
+          "Erandio",
+          "Sondika",
+          "Zamudio",
+          "Derio",
+          "Lezama",
+          "Urduliz",
+          "Berango",
+        ]),
+        allowOther: true,
       },
       {
         key: "dni",
         label: "DNI o Pasaporte (número completo CON letra)",
         type: "text",
+      },
+      {
+        key: "foto",
+        label: "Foto (opcional)",
+        type: "file",
+        help: "Sube una foto tuya desde tu ordenador (opcional).",
+      },
+      {
+        key: "telefono",
+        label: "Teléfono de contacto (con prefijo)",
+        type: "tel",
+        groupStart: "Contacto",
+      },
+      {
+        key: "email",
+        label: "Email de contacto",
+        type: "email",
       },
     ],
   },
@@ -108,29 +120,6 @@ export const SECTIONS: SectionDef[] = [
         options: opts(range(1, 7).map(String)),
       },
       {
-        key: "material",
-        label:
-          "Gimnasio donde entrenas o máquinas/material de entrenamiento del que dispones (texto aquí o envíanos fotos/vídeo por Telegram)",
-        type: "textarea",
-      },
-      {
-        key: "accesorios",
-        label:
-          "¿Tienes accesorios de entrenamiento? (ej: straps o agarraderas, cinturón...)",
-        type: "textarea",
-      },
-      {
-        key: "rutinaActual",
-        label:
-          "Explica detalladamente qué rutina has venido utilizando en los últimos meses (días de descanso incluidos) y qué ejercicios te gustaría mantener o en cuáles te gustaría progresar más",
-        type: "textarea",
-      },
-      {
-        key: "profesion",
-        label: "Profesión",
-        type: "text",
-      },
-      {
         key: "pasosDia",
         label:
           "Estilo de vida / actividad diaria (¿sabes la cantidad de pasos que haces al día?)",
@@ -154,47 +143,9 @@ export const SECTIONS: SectionDef[] = [
       {
         key: "frecuenciaCardiaca",
         label: "Frecuencia cardíaca en reposo (pulsaciones/min)",
-        type: "number",
-        min: 0,
-        max: 200,
+        type: "select",
+        options: opts(range(50, 220).map(String)),
         help: "Tómate las pulsaciones en reposo, sin moverte y sin distracciones durante 60 segundos y apunta el resultado. Lo puedes hacer en el cuello o muñecas, pero sin usar el dedo pulgar.",
-      },
-      {
-        key: "estadoAnimico",
-        label:
-          "¿Te sientes bien anímicamente, a nivel de autorrealización, competencias, pleno/a?",
-        type: "select",
-        options: opts(["Muy bien", "Bien", "Normal", "Bajo", "Muy bajo"]),
-        help: "Preguntamos esto porque es importante a nivel de salud.",
-      },
-      {
-        key: "horaLevantarse",
-        label: "Hora en la que te levantas",
-        type: "time",
-      },
-      {
-        key: "horaAcostarse",
-        label: "Hora en la que te acuestas",
-        type: "time",
-      },
-      {
-        key: "circuloSocial",
-        label:
-          "¿Consideras que tienes un círculo social (amistades/pareja/familia) que te enriquece como persona y te hace sentir completo/a?",
-        type: "select",
-        options: opts(["Muy bueno", "Bueno", "Normal", "Flojo", "Muy flojo"]),
-        help: "Preguntamos esto porque es importante a nivel de salud.",
-      },
-      {
-        key: "experienciaPrevia",
-        label:
-          "¿Alguna vez has hecho actividad física? ¿Cuál? ¿Cuándo? ¿Durante cuánto tiempo?",
-        type: "textarea",
-      },
-      {
-        key: "horaEntrenar",
-        label: "Hora en la que sueles entrenar",
-        type: "time",
       },
     ],
   },
@@ -203,18 +154,8 @@ export const SECTIONS: SectionDef[] = [
     title: "Intenciones",
     fields: [
       {
-        key: "tipoActividadFisica",
-        label: "¿Qué tipo de actividad física te gusta realizar?",
-        type: "textarea",
-      },
-      {
-        key: "objetivos",
-        label: "Explica detalladamente tus objetivos a corto, medio y largo plazo",
-        type: "textarea",
-      },
-      {
         key: "objetivosEspecificos",
-        label: "Objetivos específicos",
+        label: "Objetivos específicos (puedes elegir más de uno)",
         type: "multiselect",
         options: opts([
           "Perder peso",
@@ -227,53 +168,63 @@ export const SECTIONS: SectionDef[] = [
         ]),
       },
       {
-        key: "diasDisponiblesCantidad",
-        label: "¿Cuántos días a la semana tienes disponibles para entrenar?",
-        type: "select",
-        options: opts(range(1, 7).map(String)),
-      },
-      {
-        key: "diasDisponiblesSemana",
-        label: "¿Qué días de la semana?",
-        type: "multiselect",
-        options: opts([
-          "Lunes",
-          "Martes",
-          "Miércoles",
-          "Jueves",
-          "Viernes",
-          "Sábado",
-          "Domingo",
-        ]),
-      },
-      {
-        key: "diasDeseados",
-        label:
-          "¿Cuántos días a la semana quieres entrenar? Frecuencia de entrenamiento ideal y duración ideal estimada por sesión",
-        type: "textarea",
-      },
-      {
         key: "ejercicioConcreto",
-        label:
-          "¿Quieres hacer algún ejercicio en algún día de la semana en concreto? ¿Y grupo muscular?",
-        type: "textarea",
+        label: "¿Qué parte de tu cuerpo querrías proteger o fortalecer?",
+        type: "select",
+        options: opts(["Espalda", "Cuello", "Rodilla", "Cadera", "Tobillo"]),
+        allowOther: true,
       },
       {
         key: "grupoMuscularPrioridad",
         label: "¿A qué grupo muscular quieres darle prioridad?",
-        type: "text",
+        type: "select",
+        options: opts([
+          "Pecho",
+          "Espalda (dorsales)",
+          "Espalda alta / trapecio",
+          "Zona lumbar",
+          "Hombros (deltoides)",
+          "Bíceps",
+          "Tríceps",
+          "Antebrazos",
+          "Abdomen / core",
+          "Oblicuos",
+          "Glúteos",
+          "Cuádriceps",
+          "Isquiotibiales",
+          "Aductores",
+          "Abductores",
+          "Gemelos / sóleo",
+          "Cuerpo completo",
+        ]),
       },
     ],
   },
   {
     key: "dietetico",
     title: "Cuestionario dietético",
+    note: "(rellena este apartado únicamente si quieres unos consejos nutricionales)",
     fields: [
       {
-        key: "numComidas",
-        label: "¿Cuántas comidas haces al día? ¿A qué horas del día haces cada comida?",
-        type: "textarea",
+        key: "quierePautas",
+        label: "¿Quieres recibir unas pautas nutricionales?",
+        type: "select",
+        options: opts(["Sí", "No"]),
       },
+      {
+        key: "numComidas",
+        label: "¿Cuántas comidas haces al día?",
+        type: "select",
+        options: opts(range(1, 5).map(String)),
+      },
+      ...range(1, 5).map(
+        (n): FieldDef => ({
+          key: `horaComida${n}`,
+          label: `Comida ${n}: ¿a qué hora la haces?`,
+          type: "time",
+          showIf: [{ key: "numComidas", atLeast: n }],
+        })
+      ),
       {
         key: "cambiarNumComidas",
         label:
@@ -307,17 +258,6 @@ export const SECTIONS: SectionDef[] = [
         label:
           "¿Qué tipo de bebidas sueles beber habitualmente? ¿Qué cantidad de agua bebes al día aproximadamente?",
         type: "textarea",
-      },
-      {
-        key: "etapaActual",
-        label: "Etapa actual",
-        type: "select",
-        options: opts(["Volumen", "Definición", "Mantenimiento", "No lo sé"]),
-      },
-      {
-        key: "tiempoEnEtapa",
-        label: "¿Cuánto tiempo llevas en esa etapa?",
-        type: "text",
       },
       {
         key: "macronutrientes",
@@ -362,4 +302,24 @@ export const SECTIONS: SectionDef[] = [
   },
 ];
 
-export const ALL_FIELDS = SECTIONS.flatMap((s) => s.fields);
+// Todo el cuestionario dietético depende de querer recibir pautas.
+for (const section of SECTIONS) {
+  if (section.key !== "dietetico") continue;
+  for (const field of section.fields) {
+    if (field.key === "quierePautas") continue;
+    field.showIf = [{ key: "quierePautas", equals: "Sí" }, ...(field.showIf ?? [])];
+  }
+}
+
+export const isFieldVisible = (
+  field: FieldDef,
+  values: Record<string, ClienteValue>
+): boolean =>
+  (field.showIf ?? []).every((c) => {
+    const v = values[c.key];
+    if (c.equals !== undefined) return v === c.equals;
+    if (c.atLeast !== undefined) return Number(v) >= c.atLeast;
+    return true;
+  });
+
+export const ALL_FIELDS =SECTIONS.flatMap((s) => s.fields);

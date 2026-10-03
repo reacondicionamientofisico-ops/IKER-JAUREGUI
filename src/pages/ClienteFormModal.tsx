@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { SECTIONS } from "../data/fields";
+import { SECTIONS, isFieldVisible } from "../data/fields";
 import { clientesApi } from "../data/clientesApi";
 import FormField, { OTHER_VALUE } from "../components/FormField";
 import type { Cliente, ClienteValue } from "../types";
@@ -104,7 +104,7 @@ export default function ClienteFormModal({ cliente, onClose, onSaved }: Props) {
           {SECTIONS.map((section) => (
             <div key={section.key} style={{ marginBottom: 24 }}>
               <h3 className="subsection-title">{section.title}</h3>
-              {section.fields.map((field) => (
+              {section.fields.filter((f) => isFieldVisible(f, values)).map((field) => (
                 <div key={field.key}>
                   {field.groupStart && (
                     <h3 className="subsection-title">{field.groupStart}</h3>

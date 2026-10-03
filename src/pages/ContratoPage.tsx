@@ -3,6 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import SignaturePad from "../components/SignaturePad";
 import { contratosApi } from "../data/contratosApi";
 import logo from "../assets/logo.jpeg";
+import tarifas from "../assets/tarifas.jpeg";
 
 const PARQ = [
   "¿Alguna vez un médico le ha dicho que tiene un problema en el corazón y que sólo debería hacer actividad física recomendada por un médico?",
@@ -15,11 +16,10 @@ const PARQ = [
 ];
 
 const REQUERIDOS: [string, string][] = [
-  ["nombre", "Nombre y apellidos"],
-  ["dni", "DNI / NIE"],
-  ["domicilio", "Domicilio"],
-  ["telefono", "Teléfono"],
-  ["email", "Correo electrónico"],
+  ["nombre", "Nombre"],
+  ["primerApellido", "Primer apellido"],
+  ["segundoApellido", "Segundo apellido"],
+  ["dni", "DNI"],
   ["lugar", "Lugar de firma"],
   ["fecha", "Fecha"],
 ];
@@ -73,7 +73,6 @@ export default function ContratoPage({ embedded = false, onSigned, onClose, init
     const e: string[] = [];
     for (const [k] of REQUERIDOS) if (!v(k).trim()) e.push(k);
     if (v("dni").trim() && !/^[A-Za-z0-9-]{5,15}$/.test(v("dni").trim())) e.push("dni");
-    if (v("email").trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v("email").trim())) e.push("email");
     PARQ.forEach((_, i) => !v(`parq${i + 1}`) && e.push(`parq${i + 1}`));
     if (!v("autorizaDatos")) e.push("autorizaDatos");
     if (!firma) e.push("firma");
@@ -98,6 +97,9 @@ export default function ContratoPage({ embedded = false, onSigned, onClose, init
       const datos: Record<string, string> = {};
       for (const [k, val] of Object.entries(f)) datos[k] = val.trim();
       datos.aceptaContrato = "SI";
+      datos.nombreCompleto = nombreCompleto;
+      datos.anexoNombre = (f.anexoNombre ?? nombreCompleto).trim();
+      datos.anexoDni = (f.anexoDni ?? v("dni")).trim();
       await contratosApi.submit(datos, firma!);
       if (embedded) {
         onSigned?.();
@@ -124,7 +126,12 @@ export default function ContratoPage({ embedded = false, onSigned, onClose, init
     );
   }
 
-  const fechaLarga = v("fecha")
+  const nombreCompleto = [v("nombre"), v("primerApellido"), v("segundoApellido")]
+    .map((x) => x.trim())
+    .filter(Boolean)
+    .join(" ");
+
+  const fechaLarga =v("fecha")
     ? new Date(`${v("fecha")}T12:00:00`).toLocaleDateString("es-ES", { day: "numeric", month: "long", year: "numeric" })
     : "";
 
@@ -167,11 +174,10 @@ export default function ContratoPage({ embedded = false, onSigned, onClose, init
 
         <h4>De otra parte — El Cliente</h4>
         <div className="contrato-grid">
-          <label>Nombre y apellidos {input("nombre")}</label>
-          <label>DNI / NIE {input("dni")}</label>
-          <label>Domicilio {input("domicilio")}</label>
-          <label>Teléfono {input("telefono", { type: "tel" })}</label>
-          <label>Correo electrónico {input("email", { type: "email" })}</label>
+          <label>Nombre {input("nombre")}</label>
+          <label>Primer apellido {input("primerApellido")}</label>
+          <label>Segundo apellido {input("segundoApellido")}</label>
+          <label>DNI {input("dni")}</label>
         </div>
         <p>
           En adelante, el “Cliente”. Entrenador y Cliente serán referidos conjuntamente como las “Partes”, quienes se
@@ -211,9 +217,9 @@ export default function ContratoPage({ embedded = false, onSigned, onClose, init
 
         <h4>03 Duración</h4>
         <p>
-          El presente Contrato tendrá una duración de {input("duracionMeses", { w: 70, type: "number" })} meses a contar
+          El presente Contrato tendrá una duración de ________ meses a contar
           desde la fecha de su firma, y se prorrogará automáticamente por periodos sucesivos de{" "}
-          {input("prorrogaMeses", { w: 70, type: "number" })} mes/es, salvo que cualquiera de las Partes comunique su
+          ________ mes/es, salvo que cualquiera de las Partes comunique su
           voluntad de no prorrogarlo con, al menos, un (1) mes de antelación a la fecha de finalización del periodo en curso.
         </p>
 
@@ -223,8 +229,8 @@ export default function ContratoPage({ embedded = false, onSigned, onClose, init
           así lo requieran circunstancias derivadas de la propia práctica deportiva o ajenas al control razonable de las Partes.
         </p>
         <p>
-          Frecuencia semanal: {input("sesionesSemana", { w: 70, type: "number" })} sesiones / semana ·
-          Frecuencia mensual: {input("sesionesMes", { w: 70, type: "number" })} sesiones / mes
+          Frecuencia semanal: ________ sesiones / semana ·
+          Frecuencia mensual: ________ sesiones / mes
         </p>
         <ul>
           <li><strong>Modificación por el Cliente:</strong> el Cliente podrá modificar el día y la hora de una sesión concertada comunicándolo con la mayor antelación posible y, en todo caso, con un mínimo de 24 horas. La modificación quedará sujeta a la disponibilidad del Entrenador.</li>
@@ -312,28 +318,11 @@ export default function ContratoPage({ embedded = false, onSigned, onClose, init
         <hr />
 
         <h3>Anexo 1 · Tarifas del servicio</h3>
-        <p className="help">Rellena los importes acordados con tu entrenador (IVA incluido).</p>
-        <h4>Entrenamiento presencial</h4>
-        <table className="policy-table">
-          <thead><tr><th>Modalidad</th><th>Precio</th></tr></thead>
-          <tbody>
-            <tr><td>Sesión individual</td><td>{input("precioSesion", { w: 90, type: "number" })} €</td></tr>
-            <tr><td>Bono de {input("bono1", { w: 60, type: "number" })} sesiones</td><td>{input("precioBono1", { w: 90, type: "number" })} €</td></tr>
-            <tr><td>Bono de {input("bono2", { w: 60, type: "number" })} sesiones</td><td>{input("precioBono2", { w: 90, type: "number" })} €</td></tr>
-          </tbody>
-        </table>
-        <h4>Entrenamiento online</h4>
-        <table className="policy-table">
-          <thead><tr><th>Modalidad</th><th>Precio</th></tr></thead>
-          <tbody>
-            <tr><td>Plan mensual</td><td>{input("precioMensual", { w: 90, type: "number" })} €</td></tr>
-            <tr><td>Plan trimestral</td><td>{input("precioTrimestral", { w: 90, type: "number" })} €</td></tr>
-            <tr><td>Plan semestral</td><td>{input("precioSemestral", { w: 90, type: "number" })} €</td></tr>
-          </tbody>
-        </table>
+        <p className="help">Importes con IVA incluido. Los precios acordados los confirmará tu entrenador.</p>
+        <img className="tarifas-img" src={tarifas} alt="Tarifas de Iker Jauregui" />
         <p className="callout">
           <strong>Condiciones de los bonos.</strong> Los bonos son personales e intransferibles, se abonan por adelantado
-          y tienen una validez de {input("validezBonos", { w: 70, type: "number" })} meses desde su adquisición. Las
+          y tienen una validez de ________ meses desde su adquisición. Las
           sesiones no consumidas dentro del plazo de validez caducarán, salvo causa justificada.
         </p>
 
@@ -341,8 +330,27 @@ export default function ContratoPage({ embedded = false, onSigned, onClose, init
 
         <h3>Anexo 2 · Consentimiento informado y asunción de riesgos</h3>
         <p>
-          Yo, D./Dña. <strong>{v("nombre") || "________________"}</strong>, con DNI/NIE{" "}
-          <strong>{v("dni") || "____________"}</strong>, con la intención de participar en el programa de actividad
+          Yo, D./Dña.{" "}
+          <input
+            className="inline-input"
+            type="text"
+            style={{ width: 260 }}
+            maxLength={150}
+            value={f.anexoNombre ?? nombreCompleto}
+            onChange={(e) => set("anexoNombre", e.target.value)}
+            aria-label="Nombre del firmante (Anexo 2)"
+          />
+          , con DNI/NIE{" "}
+          <input
+            className="inline-input"
+            type="text"
+            style={{ width: 160 }}
+            maxLength={15}
+            value={f.anexoDni ?? v("dni")}
+            onChange={(e) => set("anexoDni", e.target.value)}
+            aria-label="DNI del firmante (Anexo 2)"
+          />
+          , con la intención de participar en el programa de actividad
           física dirigido por el Entrenador Iker Jauregui Tejido, declaro que:
         </p>
         <ul>
@@ -408,7 +416,7 @@ export default function ContratoPage({ embedded = false, onSigned, onClose, init
           Y en prueba de conformidad, las Partes firman el presente Contrato, así como los Anexos 1, 2 y 3, en el lugar y
           fecha indicados en el encabezamiento. El Entrenador, Iker Jauregui Tejido, contrafirmará el contrato.
         </p>
-        <p><strong>Firma del Cliente:</strong> {v("nombre") || "(nombre)"}</p>
+        <p><strong>Firma del Cliente:</strong> {nombreCompleto || "(nombre)"}</p>
         <div className={errores.includes("firma") ? "group-invalid" : ""}>
           <SignaturePad onChange={setFirma} />
           <p className="help">Dibuja tu firma con el dedo o el ratón dentro del recuadro.</p>
