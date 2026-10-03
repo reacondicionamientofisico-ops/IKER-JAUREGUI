@@ -1,12 +1,86 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { valoracionesStore } from "../data/valoracionesStore";
 import type { Valoracion } from "../data/valoracionesStore";
-import { fmsSideTotal, fmsTotal } from "../data/valoracionTests";
+import {
+  EQUILIBRIO_DIRECCIONES,
+  FMS_TESTS,
+  ROM_ROWS,
+  fmsResult,
+  fmsSideTotal,
+  fmsTotal,
+  planchaNivel,
+} from "../data/valoracionTests";
 import { calcularEdad } from "../lib/age";
 import ValoracionDetail from "./ValoracionDetail";
 
-const fmt = (n: number | null) => (n === null ? "—" : String(n));
+const fmt = (n: number | null | undefined | string) =>
+  n === null || n === undefined || n === "" ? "—" : String(n);
+
+interface Column {
+  group: string;
+  label: string;
+  cell: (v: Valoracion) => string;
+}
+
+const COLUMNS: Column[] = [
+  { group: "Datos", label: "Fecha toma", cell: (v) => fmt(v.datos.fechaToma) },
+  { group: "Datos", label: "Nombre", cell: (v) => fmt(v.datos.nombre) },
+  { group: "Datos", label: "Deporte", cell: (v) => fmt(v.datos.deporte) },
+  { group: "Datos", label: "Sexo", cell: (v) => fmt(v.datos.sexo) },
+  { group: "Datos", label: "Fecha nac.", cell: (v) => fmt(v.datos.fechaNac) },
+  { group: "Datos", label: "Edad", cell: (v) => fmt(calcularEdad(v.datos.fechaNac)) },
+  ...FMS_TESTS.flatMap((t): Column[] => [
+    {
+      group: "1. FMS",
+      label: t.labels.length === 2 ? `${t.title} · dcha.` : `${t.title} · puntuación`,
+      cell: (v) => fmt(v.values[`fms.${t.key}.0`]),
+    },
+    ...(t.labels.length === 2
+      ? [{ group: "1. FMS", label: `${t.title} · izda.`, cell: (v: Valoracion) => fmt(v.values[`fms.${t.key}.1`]) }]
+      : []),
+    { group: "1. FMS", label: `${t.title} · resultado`, cell: (v) => fmt(fmsResult(t, v.values)) },
+    { group: "1. FMS", label: `${t.title} · comentarios`, cell: (v) => fmt(v.values[`fms.${t.key}.c`]) },
+  ]),
+  { group: "1. FMS", label: "FMS dcha.", cell: (v) => fmt(fmsSideTotal(v.values, 0)) },
+  { group: "1. FMS", label: "FMS izda.", cell: (v) => fmt(fmsSideTotal(v.values, 1)) },
+  { group: "1. FMS", label: "FMS total", cell: (v) => fmt(fmsTotal(v.values)) },
+  ...ROM_ROWS.map((r): Column => ({
+    group: "2. Goniometría",
+    label: `${r.segmento} · ${r.movimiento} (°)`,
+    cell: (v) => fmt(v.values[`rom.${r.key}`]),
+  })),
+  ...(["Derecha", "Izquierda"] as const).flatMap((lado) =>
+    EQUILIBRIO_DIRECCIONES.map((d, i): Column => ({
+      group: "3. Equilibrio",
+      label: `${d} · ${lado} apoyada`,
+      cell: (v) => fmt(v.values[`eq.${lado}.${i}`]),
+    }))
+  ),
+  { group: "4. Sit and stand", label: "Evaluación", cell: (v) => fmt(v.values["sitstand"]) },
+  { group: "5. Zona media", label: "Plancha (s)", cell: (v) => fmt(v.values["zonaMedia.plancha"]) },
+  {
+    group: "5. Zona media",
+    label: "Nivel de plancha",
+    cell: (v) =>
+      fmt(
+        planchaNivel(
+          v.datos.sexo,
+          Number(calcularEdad(v.datos.fechaNac)),
+          Number(v.values["zonaMedia.plancha"] ?? "")
+        )
+      ),
+  },
+  { group: "5. Zona media", label: "Perímetro ombligo (cm)", cell: (v) => fmt(v.values["zonaMedia.perimetro"]) },
+];
+
+// Cabecera superior: grupos consecutivos con su colSpan.
+const GROUPS = COLUMNS.reduce<{ name: string; span: number }[]>((acc, c) => {
+  const last = acc[acc.length - 1];
+  if (last && last.name === c.group) last.span++;
+  else acc.push({ name: c.group, span: 1 });
+  return acc;
+}, []);
 
 export default function ValoracionTablePage() {
   const navigate = useNavigate();
@@ -15,6 +89,37 @@ export default function ValoracionTablePage() {
   const [error, setError] = useState<string | null>(null);
   const [viewId, setViewId] = useState<string | null>(null);
   const viewed = items.find((v) => v.id === viewId) ?? null;
+
+  // Barra de desplazamiento superior sincronizada con la tabla.
+  const topRef = useRef<HTMLDivElement>(null);
+  const bodyRef = useRef<HTMLDivElement>(null);
+  const [scrollWidth, setScrollWidth] = useState(0);
+
+  useEffect(() => {
+    const body = bodyRef.current;
+    if (!body) return;
+    const table = body.querySelector("table");
+    const update = () => setScrollWidth(body.scrollWidth);
+    update();
+    const ro = new ResizeObserver(update);
+    ro.observe(body);
+    if (table) ro.observe(table);
+    return () => ro.disconnect();
+  }, [items, loading]);
+
+  const syncing = useRef(false);
+  const sync = (from: "top" | "body") => () => {
+    if (syncing.current) {
+      syncing.current = false;
+      return;
+    }
+    const src = from === "top" ? topRef.current : bodyRef.current;
+    const dst = from === "top" ? bodyRef.current : topRef.current;
+    if (src && dst && dst.scrollLeft !== src.scrollLeft) {
+      syncing.current = true;
+      dst.scrollLeft = src.scrollLeft;
+    }
+  };
 
   useEffect(() => {
     let cancelado = false;
@@ -57,19 +162,25 @@ export default function ValoracionTablePage() {
         ) : items.length === 0 ? (
           <p>Todavía no hay valoraciones registradas.</p>
         ) : (
-          <div className="table-scroll">
+          <>
+          <div className="table-scroll-top" ref={topRef} onScroll={sync("top")} aria-hidden="true">
+            <div style={{ width: scrollWidth, height: 1 }} />
+          </div>
+          <div className="table-scroll" ref={bodyRef} onScroll={sync("body")}>
             <table className="valoracion-glossary valoracion-data valoracion-list">
               <thead>
                 <tr>
-                  <th>Acciones</th>
-                  <th>Fecha toma</th>
-                  <th>Nombre</th>
-                  <th>Deporte</th>
-                  <th>Sexo</th>
-                  <th>Edad</th>
-                  <th>FMS dcha.</th>
-                  <th>FMS izda.</th>
-                  <th>FMS total</th>
+                  <th rowSpan={2}>Acciones</th>
+                  {GROUPS.map((g) => (
+                    <th key={g.name} colSpan={g.span} className="group-head">
+                      {g.name}
+                    </th>
+                  ))}
+                </tr>
+                <tr>
+                  {COLUMNS.map((c, i) => (
+                    <th key={i}>{c.label}</th>
+                  ))}
                 </tr>
               </thead>
               <tbody>
@@ -86,19 +197,15 @@ export default function ValoracionTablePage() {
                         🗑
                       </button>
                     </td>
-                    <td>{v.datos.fechaToma}</td>
-                    <td>{v.datos.nombre}</td>
-                    <td>{v.datos.deporte}</td>
-                    <td>{v.datos.sexo}</td>
-                    <td>{calcularEdad(v.datos.fechaNac)}</td>
-                    <td>{fmt(fmsSideTotal(v.values, 0))}</td>
-                    <td>{fmt(fmsSideTotal(v.values, 1))}</td>
-                    <td>{fmt(fmsTotal(v.values))}</td>
+                    {COLUMNS.map((c, i) => (
+                      <td key={i}>{c.cell(v)}</td>
+                    ))}
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
+          </>
         )}
       </div>
       {viewed && (

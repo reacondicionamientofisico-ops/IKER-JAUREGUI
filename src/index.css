@@ -932,6 +932,11 @@ tbody tr:hover {
 .valoracion-images { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin: 0 0 16px; }
 .valoracion-images img { max-width: 100%; max-height: 240px; object-fit: contain; border-radius: 6px; }
 .table-scroll { overflow-x: auto; }
+.table-scroll-top { overflow-x: auto; overflow-y: hidden; margin-bottom: 4px; }
+.table-scroll-top > div { min-height: 1px; }
+.valoracion .valoracion-list .group-head { text-align: center; background: var(--color-crema); }
+.valoracion .valoracion-list th { white-space: normal; min-width: 90px; vertical-align: bottom; }
+.valoracion .valoracion-list td { max-width: 260px; overflow: hidden; text-overflow: ellipsis; }
 .valoracion-glossary td input { width: 90px; }
 .valoracion-puntos { font-size: 0.9rem; margin: 0 0 16px; padding: 10px 14px; border: 1px solid #384730; border-radius: 6px; background: #fff; }
 .valoracion-puntos ul { margin: 6px 0 0; padding-left: 20px; }
@@ -980,17 +985,6 @@ tbody tr:hover {
   .header .header-section { width: auto; margin-left: 0; flex-basis: 100%; font-size: 0.95rem; }
   .valoracion .card { padding: 16px; }
   .valoracion .valoracion-images img { max-height: 160px; }
-  /* tabla de listado: solo lo esencial, el resto está en el detalle */
-  .valoracion .valoracion-list th:nth-child(4),
-  .valoracion .valoracion-list td:nth-child(4),
-  .valoracion .valoracion-list th:nth-child(5),
-  .valoracion .valoracion-list td:nth-child(5),
-  .valoracion .valoracion-list th:nth-child(6),
-  .valoracion .valoracion-list td:nth-child(6),
-  .valoracion .valoracion-list th:nth-child(7),
-  .valoracion .valoracion-list td:nth-child(7),
-  .valoracion .valoracion-list th:nth-child(8),
-  .valoracion .valoracion-list td:nth-child(8) { display: none; }
   .valoracion .valoracion-rom td input { width: 64px; }
   .valoracion .valoracion-glossary th,
   .valoracion .valoracion-glossary td { padding: 6px 4px; }

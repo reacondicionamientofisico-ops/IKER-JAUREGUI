@@ -228,9 +228,18 @@ export default function FormPage({ publico = false }: { publico?: boolean }) {
                   </button>
                 </div>
                 <p className="help" style={{ textAlign: "center" }}>
-                  {consent
-                    ? "✓ Política de protección de datos aceptada."
-                    : "Obligatorio: lee la política de protección de datos y acepta el consentimiento."}
+                  <label style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
+                    <input
+                      type="checkbox"
+                      checked={consent}
+                      readOnly
+                      tabIndex={-1}
+                      style={{ accentColor: "#9c7b3c", pointerEvents: "none" }}
+                    />
+                    {consent
+                      ? "Política de protección de datos aceptada."
+                      : "Obligatorio: lee la política de protección de datos y acepta el consentimiento."}
+                  </label>
                 </p>
                 {errors["__consent"] && (
                   <p className="error-text" style={{ textAlign: "center" }}>
@@ -238,9 +247,18 @@ export default function FormPage({ publico = false }: { publico?: boolean }) {
                   </p>
                 )}
                 <p className="help" style={{ textAlign: "center" }}>
-                  {contratoFirmado
-                    ? "✓ Contrato firmado correctamente."
-                    : "Obligatorio: rellena todos los campos del contrato y fírmalo."}
+                  <label style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
+                    <input
+                      type="checkbox"
+                      checked={contratoFirmado}
+                      readOnly
+                      tabIndex={-1}
+                      style={{ accentColor: "#9c7b3c", pointerEvents: "none" }}
+                    />
+                    {contratoFirmado
+                      ? "Contrato firmado correctamente."
+                      : "Obligatorio: rellena todos los campos del contrato y fírmalo."}
+                  </label>
                 </p>
                 {errors["__contrato"] && (
                   <p className="error-text" style={{ textAlign: "center" }}>

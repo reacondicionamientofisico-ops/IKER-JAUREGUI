@@ -201,7 +201,7 @@ export default function ContratoPage({ embedded = false, onSigned, onClose, init
         <h4>01 Objeto</h4>
         <p>
           El Cliente encarga al Entrenador, que acepta, la prestación de los servicios descritos en la Cláusula Segunda
-          (los “Servicios”), durante el plazo establecido en la Cláusula Tercera.
+          (los “Servicios”), durante el plazo acordado entre las Partes.
         </p>
 
         <h4>02 Servicios</h4>
@@ -215,22 +215,10 @@ export default function ContratoPage({ embedded = false, onSigned, onClose, init
         </ul>
         <p>El asesoramiento en materia de hábitos tiene carácter general y no sustituye el diagnóstico, tratamiento o pauta dietética de un profesional sanitario.</p>
 
-        <h4>03 Duración</h4>
-        <p>
-          El presente Contrato tendrá una duración de ________ meses a contar
-          desde la fecha de su firma, y se prorrogará automáticamente por periodos sucesivos de{" "}
-          ________ mes/es, salvo que cualquiera de las Partes comunique su
-          voluntad de no prorrogarlo con, al menos, un (1) mes de antelación a la fecha de finalización del periodo en curso.
-        </p>
-
-        <h4>04 Sesiones de entrenamiento</h4>
+        <h4>03 Sesiones de entrenamiento</h4>
         <p>
           Cada sesión de entrenamiento personal tendrá una duración de entre 45 y 60 minutos, pudiendo prolongarse cuando
           así lo requieran circunstancias derivadas de la propia práctica deportiva o ajenas al control razonable de las Partes.
-        </p>
-        <p>
-          Frecuencia semanal: ________ sesiones / semana ·
-          Frecuencia mensual: ________ sesiones / mes
         </p>
         <ul>
           <li><strong>Modificación por el Cliente:</strong> el Cliente podrá modificar el día y la hora de una sesión concertada comunicándolo con la mayor antelación posible y, en todo caso, con un mínimo de 24 horas. La modificación quedará sujeta a la disponibilidad del Entrenador.</li>
@@ -238,7 +226,7 @@ export default function ContratoPage({ embedded = false, onSigned, onClose, init
           <li><strong>Cancelación por el Entrenador:</strong> si el Entrenador no pudiera asistir a una sesión concertada, ésta se reprogramará de mutuo acuerdo. De no ser posible, el Cliente tendrá derecho al reembolso del importe correspondiente a dicha sesión.</li>
         </ul>
 
-        <h4>05 Honorarios y forma de pago</h4>
+        <h4>04 Honorarios y forma de pago</h4>
         <p>
           Los honorarios por los Servicios son los detallados en la tabla de tarifas que se adjunta como Anexo 1. El
           Entrenador podrá actualizar dichas tarifas notificándolo al Cliente con un mínimo de treinta (30) días de
@@ -252,12 +240,12 @@ export default function ContratoPage({ embedded = false, onSigned, onClose, init
           correspondiente factura o justificante de pago.
         </p>
 
-        <h4>06 Obligaciones del Entrenador</h4>
+        <h4>05 Obligaciones del Entrenador</h4>
         <p>Sin perjuicio de las restantes disposiciones del Contrato, el Entrenador se obliga a:</p>
         <ul>
           <li>Prestar los Servicios con la diligencia y profesionalidad propias de su actividad.</li>
           <li>Aportar el material necesario para el entrenamiento cuando el Cliente no disponga de él.</li>
-          <li>Respetar, sin perjuicio de lo dispuesto en la Cláusula Cuarta, el horario concertado para cada sesión.</li>
+          <li>Respetar, sin perjuicio de lo dispuesto en la Cláusula Tercera, el horario concertado para cada sesión.</li>
           <li>Emplear cuantos medios razonables estén a su alcance para la consecución de los objetivos del Cliente.</li>
           <li>Tratar los datos personales del Cliente con estricta confidencialidad, conforme a la Política de Protección de Datos que se entrega junto a este Contrato.</li>
         </ul>
@@ -266,7 +254,7 @@ export default function ContratoPage({ embedded = false, onSigned, onClose, init
           resultados dependen, entre otros factores, de la constancia, los hábitos y la condición individual del Cliente.
         </p>
 
-        <h4>07 Obligaciones del Cliente</h4>
+        <h4>06 Obligaciones del Cliente</h4>
         <p>Por su parte, el Cliente se obliga a:</p>
         <ul>
           <li>Abonar puntualmente los Servicios conforme a lo dispuesto en este Contrato.</li>
@@ -277,7 +265,7 @@ export default function ContratoPage({ embedded = false, onSigned, onClose, init
           <li>Entregar firmado el documento de consentimiento informado y asunción de riesgos que se adjunta como Anexo 2.</li>
         </ul>
 
-        <h4>08 Resolución del contrato</h4>
+        <h4>07 Resolución del contrato</h4>
         <p>
           Cualquiera de las Partes podrá resolver el Contrato en caso de incumplimiento grave de las obligaciones de la
           otra, previa notificación por escrito. Asimismo, el Entrenador podrá suspender o resolver los Servicios si, a su
@@ -285,7 +273,7 @@ export default function ContratoPage({ embedded = false, onSigned, onClose, init
           reembolsando en tal caso las sesiones abonadas y no disfrutadas.
         </p>
 
-        <h4>09 Protección de datos</h4>
+        <h4>08 Protección de datos</h4>
         <p>
           Los datos personales del Cliente serán tratados por el Entrenador, como responsable del tratamiento, para la
           gestión de la relación contractual y la prestación de los Servicios, conforme al RGPD y a la LOPDGDD. La
@@ -300,14 +288,14 @@ export default function ContratoPage({ embedded = false, onSigned, onClose, init
           , que el Cliente declara haber recibido.
         </p>
 
-        <h4>10 Notificaciones</h4>
+        <h4>09 Notificaciones</h4>
         <p>Todas las comunicaciones relativas a este Contrato se dirigirán a las siguientes direcciones, o a cualquier otra que una Parte haya notificado debidamente a la otra:</p>
         <ul>
           <li><strong>Al Entrenador:</strong> iker.jau@gmail.com · 628 454 455</li>
           <li><strong>Al Cliente:</strong> correo electrónico y teléfono indicados en el encabezamiento.</li>
         </ul>
 
-        <h4>11 Ley aplicable y jurisdicción</h4>
+        <h4>10 Ley aplicable y jurisdicción</h4>
         <p>
           El presente Contrato se rige por la legislación española. Para cualquier controversia relativa a su validez,
           interpretación o cumplimiento, las Partes se someten a los Juzgados y Tribunales de Bilbao, salvo que la
@@ -321,8 +309,7 @@ export default function ContratoPage({ embedded = false, onSigned, onClose, init
         <p className="help">Importes con IVA incluido. Los precios acordados los confirmará tu entrenador.</p>
         <img className="tarifas-img" src={tarifas} alt="Tarifas de Iker Jauregui" />
         <p className="callout">
-          <strong>Condiciones de los bonos.</strong> Los bonos son personales e intransferibles, se abonan por adelantado
-          y tienen una validez de ________ meses desde su adquisición. Las
+          <strong>Condiciones de los bonos.</strong> Los bonos son personales e intransferibles, se abonan por adelantado. Las
           sesiones no consumidas dentro del plazo de validez caducarán, salvo causa justificada.
         </p>
 
@@ -330,27 +317,7 @@ export default function ContratoPage({ embedded = false, onSigned, onClose, init
 
         <h3>Anexo 2 · Consentimiento informado y asunción de riesgos</h3>
         <p>
-          Yo, D./Dña.{" "}
-          <input
-            className="inline-input"
-            type="text"
-            style={{ width: 260 }}
-            maxLength={150}
-            value={f.anexoNombre ?? nombreCompleto}
-            onChange={(e) => set("anexoNombre", e.target.value)}
-            aria-label="Nombre del firmante (Anexo 2)"
-          />
-          , con DNI/NIE{" "}
-          <input
-            className="inline-input"
-            type="text"
-            style={{ width: 160 }}
-            maxLength={15}
-            value={f.anexoDni ?? v("dni")}
-            onChange={(e) => set("anexoDni", e.target.value)}
-            aria-label="DNI del firmante (Anexo 2)"
-          />
-          , con la intención de participar en el programa de actividad
+          Con la intención de participar en el programa de actividad
           física dirigido por el Entrenador Iker Jauregui Tejido, declaro que:
         </p>
         <ul>
