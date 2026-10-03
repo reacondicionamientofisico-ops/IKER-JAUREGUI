@@ -23,7 +23,7 @@ export default function Header() {
         <p>Centro de entrenamiento personal</p>
       </div>
       <div className="header-right">
-      {isPublic ? null : ONLY_VALORACION ? (
+      {isPublic || location.pathname.startsWith("/clientes") ? null : ONLY_VALORACION ? (
         <span className="header-section">Valoraciones</span>
       ) : (
         <nav className="nav">
@@ -35,7 +35,7 @@ export default function Header() {
           </NavLink>
         </nav>
       )}
-      {session && !location.pathname.startsWith("/cuestionario") && (
+      {session && !location.pathname.startsWith("/cuestionario") && !location.pathname.startsWith("/clientes") && (
         <button type="button" className="btn btn-outline" onClick={() => void signOut()}>
           Salir
         </button>

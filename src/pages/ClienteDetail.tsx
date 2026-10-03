@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { SECTIONS } from "../data/fields";
+import { SECTIONS, isFieldVisible } from "../data/fields";
 import { clientesApi } from "../data/clientesApi";
 import { valoracionesStore } from "../data/valoracionesStore";
 import type { Valoracion } from "../data/valoracionesStore";
@@ -10,7 +10,6 @@ import { ValoracionContent } from "./ValoracionDetail";
 interface Props {
   cliente: Cliente;
   onClose: () => void;
-  onDelete: (id: string) => void;
   onEstadoChange: (id: string, estado: Cliente["estado"]) => void;
 }
 
@@ -61,7 +60,6 @@ function fullName(cliente: Cliente): string {
 export default function ClienteDetail({
   cliente,
   onClose,
-  onDelete,
   onEstadoChange,
 }: Props) {
   const fotoPath = cliente.values["foto"] as string | undefined;
@@ -205,7 +203,7 @@ export default function ClienteDetail({
         </div>
 
         <div className="inner-tabs main-tabs sticky-tabs" role="tablist">
-          {[...SECTIONS.map((s) => ({ key: s.key, title: s.title })), { key: "valoracion", title: "Valoración" }].map(
+          {[{ key: SECTIONS[0].key, title: "Ficha" }, { key: "valoracion", title: "Valoración" }].map(
             (section) => (
               <button
                 key={section.key}
@@ -229,6 +227,7 @@ export default function ClienteDetail({
               {buildRows(
                 section.fields.filter(
                   (field) =>
+                    isFieldVisible(field, cliente.values) &&
                     field.key !== "telefono" &&
                     field.key !== "email" &&
                     field.key !== "nombre" &&
@@ -296,17 +295,6 @@ export default function ClienteDetail({
         )}
 
         <div className="btn-row">
-          <button
-            className="btn danger"
-            onClick={() => {
-              if (confirm("¿Seguro que quieres eliminar este registro?")) {
-                onDelete(cliente.id);
-                onClose();
-              }
-            }}
-          >
-            Eliminar registro
-          </button>
           <button className="btn secondary" onClick={onClose}>
             Cerrar
           </button>

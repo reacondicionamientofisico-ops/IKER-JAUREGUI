@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import CopyFormLinkButton from "../components/CopyFormLinkButton";
+import { useAuth } from "../lib/auth";
 import { clientesApi } from "../data/clientesApi";
 import ClienteDetail from "./ClienteDetail";
 import ClienteFormModal from "./ClienteFormModal";
+import tarifasImg from "../assets/tarifas.jpeg";
 import type { Cliente } from "../types";
 
 function val(c: Cliente, key: string): string {
@@ -37,12 +39,14 @@ function Avatar({ fotoPath }: { fotoPath: string }) {
 }
 
 export default function TablePage() {
+  const { signOut } = useAuth();
   const [clientes, setClientes] = useState<Cliente[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [viewId, setViewId] = useState<string | null>(null);
   const [editId, setEditId] = useState<string | null>(null);
   const [adding, setAdding] = useState(false);
+  const [tarifasOpen, setTarifasOpen] = useState(false);
 
   const refresh = () => {
     setLoading(true);
@@ -79,12 +83,18 @@ export default function TablePage() {
     <div className="container container-wide">
       <div className="toolbar">
         <button className="btn" onClick={() => setAdding(true)}>
-          Añadir
+          Usuarios
         </button>
-        <Link className="btn secondary" to="/formulario">
-          Formulario Inscripción
+        <button type="button" className="btn secondary" onClick={() => setTarifasOpen(true)}>
+          Tarifas
+        </button>
+        <Link className="btn secondary" to="/valoracion">
+          Valoraciones
         </Link>
         <CopyFormLinkButton />
+        <button type="button" className="btn btn-outline" style={{ marginLeft: "auto" }} onClick={() => void signOut()}>
+          Salir
+        </button>
       </div>
 
       {loading && <p className="help">Cargando usuarios...</p>}
@@ -189,7 +199,6 @@ export default function TablePage() {
         <ClienteDetail
           cliente={viewing}
           onClose={() => setViewId(null)}
-          onDelete={handleDelete}
           onEstadoChange={handleEstadoChange}
         />
       )}
@@ -208,6 +217,29 @@ export default function TablePage() {
           onClose={() => setAdding(false)}
           onSaved={refresh}
         />
+      )}
+
+      {tarifasOpen && (
+        <div
+          className="modal-backdrop"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Tarifas"
+          onClick={() => setTarifasOpen(false)}
+        >
+          <div className="modal" onClick={(e) => e.stopPropagation()}>
+            <div className="btn-row policy-top-actions">
+              <button type="button" className="btn secondary" onClick={() => setTarifasOpen(false)}>
+                Cerrar
+              </button>
+            </div>
+            <img
+              src={tarifasImg}
+              alt="Tarifas de Iker Jauregui"
+              style={{ display: "block", maxWidth: "100%", maxHeight: "calc(100vh - 200px)", width: "auto", margin: "12px auto", borderRadius: 6 }}
+            />
+          </div>
+        </div>
       )}
     </div>
   );

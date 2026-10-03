@@ -116,13 +116,13 @@ button {
   text-align: center;
   text-decoration: none;
   font-family: inherit;
-  font-size: 0.85rem;
+  font-size: 0.95rem;
   font-weight: 600;
-  line-height: 1;
+  line-height: normal;
   color: var(--color-verde);
   background: transparent;
   border: 1px solid var(--color-verde);
-  padding: 10px 16px;
+  padding: 12px 25px;
   border-radius: 999px;
   cursor: pointer;
   white-space: nowrap;
@@ -178,8 +178,14 @@ button {
   margin-bottom: 16px;
 }
 
+.section-title .section-note {
+  font-size: 0.9rem;
+  font-weight: 500;
+  font-style: italic;
+  color: var(--color-texto, inherit);
+}
 .section-title {
-  font-size: 1.75rem;
+  font-size: 1.4rem;
   font-weight: 700;
   color: var(--color-verde);
   border-bottom: 3px solid var(--color-verde-claro);
@@ -189,7 +195,7 @@ button {
 
 .subsection-title {
   color: var(--color-acento);
-  font-size: 1.5rem;
+  font-size: 1.2rem;
   margin: 28px 0 16px;
   padding-bottom: 6px;
   border-bottom: 2px solid var(--color-verde-claro);
@@ -202,7 +208,7 @@ button {
 .field label {
   display: block;
   font-weight: 800;
-  font-size: 1.1rem;
+  font-size: 0.85rem;
   letter-spacing: 0.04em;
   text-transform: uppercase;
   margin-bottom: 10px;
@@ -212,7 +218,7 @@ button {
 }
 
 .field .help {
-  font-size: 0.78rem;
+  font-size: 0.72rem;
   color: #6a6a6a;
   margin: 4px 0 0;
   line-height: 1.4;
@@ -230,7 +236,7 @@ button {
   padding: 10px 12px;
   border: 1px solid var(--color-borde);
   border-radius: 8px;
-  font-size: 0.95rem;
+  font-size: 0.85rem;
   font-family: inherit;
   background: var(--color-blanco);
   color: var(--color-texto);
@@ -467,15 +473,41 @@ button {
   gap: 10px;
   align-items: flex-start;
   font-size: 0.82rem;
-  color: #555;
+  color: var(--color-texto);
   margin: 24px 0;
-  padding: 14px;
-  background: var(--color-crema);
+  padding: 16px;
+  background: #fff6dc;
+  border: 2px solid var(--color-acento);
+  border-left-width: 6px;
   border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(156, 122, 60, 0.25);
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.consent:has(input:checked) {
+  background: #e6f2dc;
+  border-color: var(--color-verde-claro);
+  box-shadow: 0 2px 8px rgba(92, 115, 80, 0.25);
 }
 
 .consent input {
-  margin-top: 3px;
+  flex: 0 0 auto;
+  width: 22px;
+  height: 22px;
+  margin: 0;
+  accent-color: var(--color-verde);
+  cursor: pointer;
+}
+
+.link-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  color: inherit;
+  text-decoration: underline;
+  cursor: pointer;
 }
 
 .confirmation {
@@ -497,8 +529,9 @@ button {
 .toolbar {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
-  margin-bottom: 18px;
+  gap: 16px;
+  margin-top: 24px;
+  margin-bottom: 28px;
   align-items: center;
 }
 
@@ -1135,3 +1168,4 @@ html {
 .signature-pad canvas { width: 100%; max-width: 600px; aspect-ratio: 3 / 1; border: 2px dashed var(--color-verde-claro); border-radius: 8px; background: #fff; touch-action: none; cursor: crosshair; display: block; }
 .signature-pad .btn { margin-top: 8px; }
 @media (max-width: 680px) { .radio-row { flex-direction: column; align-items: flex-start; } }
+.contrato .tarifas-img { display: block; max-width: 100%; width: 420px; margin: 12px auto; border-radius: 6px; }
