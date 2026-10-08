@@ -138,8 +138,10 @@ create table if not exists public.contratos (
 
 alter table public.contratos enable row level security;
 
-create policy "anon puede insertar contratos"
-  on public.contratos for insert to anon with check (true);
+-- También authenticated: si Iker tiene sesión abierta en el navegador, el
+-- formulario público envía el JWT de su sesión y se evalúa como authenticated.
+create policy "anon y autenticados pueden insertar contratos"
+  on public.contratos for insert to anon, authenticated with check (true);
 
 create policy "autenticados pueden leer contratos"
   on public.contratos for select to authenticated using (true);

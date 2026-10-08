@@ -485,6 +485,24 @@ button {
   transition: background 0.2s, border-color 0.2s;
 }
 
+@keyframes consent-heartbeat {
+  0%, 100% { transform: scale(1); box-shadow: 0 2px 8px rgba(156, 122, 60, 0.25); }
+  14% { transform: scale(1.025); box-shadow: 0 0 0 4px rgba(156, 122, 60, 0.35); }
+  28% { transform: scale(1); box-shadow: 0 2px 8px rgba(156, 122, 60, 0.25); }
+  42% { transform: scale(1.025); box-shadow: 0 0 0 4px rgba(156, 122, 60, 0.35); }
+  70% { transform: scale(1); box-shadow: 0 2px 8px rgba(156, 122, 60, 0.25); }
+}
+
+.consent:not(:has(input:checked)) {
+  animation: consent-heartbeat 1.6s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .consent:not(:has(input:checked)) {
+    animation: none;
+  }
+}
+
 .consent:has(input:checked) {
   background: #e6f2dc;
   border-color: var(--color-verde-claro);
@@ -1155,6 +1173,18 @@ html {
 .contrato-grid .inline-input { width: 100%; box-sizing: border-box; font-weight: 400; }
 .inline-input:focus { outline: none; border-color: var(--color-verde); }
 .inline-input.invalid, .group-invalid { border-color: var(--color-error); }
+@keyframes latido {
+  0%, 40%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(37, 99, 235, 0); }
+  10% { transform: scale(1.03); box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.35); }
+  20% { transform: scale(1); box-shadow: 0 0 0 0 rgba(37, 99, 235, 0); }
+  30% { transform: scale(1.02); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.25); }
+}
+.inline-input.vacio:not(:focus) { background: #e8f0ff; border: 1.5px solid #2563eb; animation: latido 1.8s ease-in-out infinite; }
+.inline-input.vacio:not(:focus)::placeholder { color: #3b5fb8; }
+.radio-set.vacio { background: #e8f0ff; border: 1.5px solid #2563eb; border-radius: 999px; padding: 4px 14px; animation: latido 1.8s ease-in-out infinite; }
+.radio-set.vacio:focus-within { animation: none; }
+.inline-input.vacio:focus { background: #f4f8ff; border-color: #2563eb; }
+@media (prefers-reduced-motion: reduce) { .radio-set.vacio { animation: none; } .inline-input.vacio:not(:focus) { animation: none; box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.3); } }
 .group-invalid { outline: 2px solid var(--color-error); outline-offset: 4px; border-radius: 6px; }
 .radio-row { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 10px 0; border-bottom: 1px solid var(--color-borde); }
 .radio-set { display: flex; gap: 16px; flex: 0 0 auto; }

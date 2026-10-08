@@ -95,6 +95,7 @@ export default function TablePage() {
             <table>
               <thead>
                 <tr>
+                  <th>Fecha y hora de inscripción</th>
                   <th>Acciones</th>
                   <th>Nombre y apellidos</th>
                   <th>Edad</th>
@@ -111,6 +112,12 @@ export default function TablePage() {
                     className="row-clickable"
                     onClick={() => setViewId(c.id)}
                   >
+                    <td data-label="Inscripción" style={{ whiteSpace: "nowrap" }}>
+                      {new Date(c.createdAt).toLocaleString("es-ES", {
+                        dateStyle: "short",
+                        timeStyle: "short",
+                      })}
+                    </td>
                     <td className="row-actions" onClick={(e) => e.stopPropagation()}>
                       <button
                         type="button"

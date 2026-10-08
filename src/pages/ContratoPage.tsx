@@ -51,7 +51,7 @@ export default function ContratoPage({ embedded = false, onSigned, onClose, init
 
   const input = (k: string, opts: { type?: string; w?: number; ph?: string } = {}) => (
     <input
-      className={`inline-input${bad(k)}`}
+      className={`inline-input${bad(k)}${v(k) === "" ? " vacio" : ""}`}
       type={opts.type ?? "text"}
       style={opts.w ? { width: opts.w } : undefined}
       placeholder={opts.ph}
@@ -101,13 +101,10 @@ export default function ContratoPage({ embedded = false, onSigned, onClose, init
       datos.anexoNombre = (f.anexoNombre ?? nombreCompleto).trim();
       datos.anexoDni = (f.anexoDni ?? v("dni")).trim();
       await contratosApi.submit(datos, firma!);
-      if (embedded) {
-        onSigned?.();
-        return;
-      }
       setEnviado(true);
       window.scrollTo({ top: 0 });
-    } catch {
+    } catch (err) {
+      console.error("Error al enviar el contrato:", err);
       setErrorEnvio("No se ha podido enviar el contrato. Comprueba tu conexión e inténtalo de nuevo.");
     } finally {
       setEnviando(false);
@@ -116,11 +113,16 @@ export default function ContratoPage({ embedded = false, onSigned, onClose, init
 
   if (enviado) {
     return (
-      <div className="container">
-        <div className="card confirmation">
+      <div className={embedded ? undefined : "container"}>
+        <div className="card confirmation" role="status">
           <img src={logo} alt="Logo IJ" />
           <h2>¡Contrato firmado!</h2>
           <p>Hemos recibido tu contrato firmado correctamente. Iker se pondrá en contacto contigo en breve.</p>
+          {embedded && (
+            <button type="button" className="btn" onClick={() => onSigned?.()}>
+              Volver al cuestionario
+            </button>
+          )}
         </div>
       </div>
     );
@@ -330,7 +332,7 @@ export default function ContratoPage({ embedded = false, onSigned, onClose, init
         </ul>
         <div className={`radio-row${errores.includes("autorizaDatos") ? " group-invalid" : ""}`}>
           <span>Autorizo el uso anonimizado de los resultados de mis pruebas con fines científicos o divulgativos.</span>
-          <span className="radio-set">{radio("autorizaDatos", "SI", "SÍ")}{radio("autorizaDatos", "NO", "NO")}</span>
+          <span className={`radio-set${v("autorizaDatos") === "" ? " vacio" : ""}`}>{radio("autorizaDatos", "SI", "SÍ")}{radio("autorizaDatos", "NO", "NO")}</span>
         </div>
 
         <hr />
@@ -348,7 +350,7 @@ export default function ContratoPage({ embedded = false, onSigned, onClose, init
         {PARQ.map((q, i) => (
           <div key={i} className={`radio-row${errores.includes(`parq${i + 1}`) ? " group-invalid" : ""}`}>
             <span><strong>{i + 1}.</strong> {q}</span>
-            <span className="radio-set">{radio(`parq${i + 1}`, "SI", "SÍ")}{radio(`parq${i + 1}`, "NO", "NO")}</span>
+            <span className={`radio-set${v(`parq${i + 1}`) === "" ? " vacio" : ""}`}>{radio(`parq${i + 1}`, "SI", "SÍ")}{radio(`parq${i + 1}`, "NO", "NO")}</span>
           </div>
         ))}
         <p className="callout">
